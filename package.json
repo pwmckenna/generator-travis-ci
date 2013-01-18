@@ -1,7 +1,7 @@
 {
   "name": "yeoman-travis",
   "version": "0.1.0",
-  "description": "Yeoman generator that sets up automated deployment to gh-pages on every commit to master via travis-ci",
+  "description": "Yeoman generator that sets up automated deployment to gh-pages on every commit to master via travis-ci.org",
   "repository": {
     "type": "git",
     "url": "git://github.com/pwmckenna/yeoman-travis.git"
@@ -15,5 +15,11 @@
   ],
   "author": "Patrick Williams",
   "license": "BSD",
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "main": "",
+  "bin": "",
+  "homepage": "https://github.com/pwmckenna/yeoman-travis-ci",
+  "dependencies": {
+    "yeoman": "~0.9.6"
+  }
 }
