@@ -1,39 +1,85 @@
 var path = require('path');
 var util = require('util');
-var yeoman = require('../../../../');
+var yeoman = require('yeoman');
+
+function generateOAuthToken(user, success, error) {
+  console.log('Github OAuth'.bold);
+  console.log('To deploy to your gh-pages branch, travis must be granted a github oauth token.');
+  console.log('Executing'.bold + ': ' + 'curl -u \'' + user + '\' -d \'{"scopes":["repo"],"note":"push to gh-pages from travis"}\' https://api.github.com/authorizations'.grey);
+  var spawn = require('child_process').spawn,
+      ls    = spawn('curl', ['-u', user, '-d', '{"scopes":["repo"],"note":"push to gh-pages from travis-ci"}', 'https://api.github.com/authorizations']);
+
+  ls.stdout.on('data', function (data) {
+    var payload = JSON.parse(''+data);
+    if(payload && payload.hasOwnProperty('token')) {
+      var token = payload.token;
+      if(typeof token === 'string' && token.length === 40) {
+        console.log('\n\ngithub oauth token generation...' + 'success'.green.bold + '\n\n');
+        success(token);
+      } else {
+        console.log('invalid github oauth token!'.red);
+        error();
+      }
+    } else {
+      console.log('github oauth token generation request failed'.red);
+      error();
+    }
+  });
+
+  ls.stderr.on('data', function (data) {
+    var err = '' + data;
+    if(err.indexOf('password') !== -1) {
+      console.log(err);
+    }
+  });
+
+  ls.on('exit', function (code) {
+    console.log('child process exited with code ' + code);
+    // cb();
+  });
+}
+
+function encryptOAuthToken(token, success, error) {
+  console.log('Encrypting OAuth Token'.bold);
+  console.log('To prevent your oauth token from being visible in travis-ci logs, it must be encrypted using the `travis` gem.');
+  console.log('Executing'.bold + ': ' + 'travis encrypt GH_OAUTH_TOKEN=****************************************')
+  console.log('\n\ngithub oauth token encryption...' + 'success'.green.bold + '\n\n');
+  success(token);
+}
 
 module.exports = Generator;
 
 function Generator() {
   yeoman.generators.Base.apply( this, arguments );
-  this.appname = 'travis-ci';
+  this.appname = path.basename(process.cwd());
   this.desc('This generator creates a .travis.yml that tells travis-ci to build your yeoman project and push the build to your gh-pages branch, on every commit to master.');
 }
 
-util.inherits( Generator, yeoman.generators.NamedBase );
+util.inherits( Generator, yeoman.generators.Base );
 
 Generator.prototype.askFor = function askFor( argument ) {
   var cb = this.async();
 
   // Welcome message
-  var logo = ''+
-  '\n╔════════════════════════════════╗'.red+
-  '\n║¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
-  '\n║¤¤¤¤'.red+'╔══════════════════════╗'.white+'¤¤¤¤║'.red+
-  '\n║¤¤¤¤'.red+'║ '.white+'╔══════════════════╗'.red+' ║'.white+'¤¤¤¤║'.red+
-  '\n║¤¤¤¤'.red+'║ '.white+'║ ╔═════╗  ╔═════╗ ║'.red+' ║'.white+'¤¤¤¤║'.red+
-  '\n║¤¤¤¤'.red+'║ '.white+'╚═╝'.red+' ╔═╗ '.white+'║  ║'.red+' ╔═╗ '.white+'╚═╝'.red+' ║'.white+'¤¤¤¤║'.red+
-  '\n║¤¤¤¤'.red+'╚═════╝'.white+'¤'.red+'║ '.white+'║  ║'.red+' ║'.white+'¤'.red+'╚═════╝'.white+'¤¤¤¤║'.red+
-  '\n║¤¤¤¤¤¤¤¤¤¤¤¤'.red+'║ '.white+'║  ║'.red+' ║'.white+'¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
-  '\n║¤¤¤¤¤¤¤¤¤¤¤¤'.red+'║ '.white+'║  ║'.red+' ║'.white+'¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
-  '\n║¤¤¤¤¤¤¤¤¤¤¤¤'.red+'║ '.white+'║  ║'.red+' ║'.white+'¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
-  '\n║¤¤¤¤¤¤¤¤¤¤¤¤'.red+'║ '.white+'║  ║'.red+' ║'.white+'¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
-  '\n║¤¤¤¤¤¤¤¤¤¤¤'.red+'╔╝ '.white+'║  ║'.red+' ╚╗'.white+'¤¤¤¤¤¤¤¤¤¤¤║'.red+
-  '\n║¤¤¤¤¤¤¤¤¤¤¤'.red+'║ '.white+'╔╝  ╚╗'.red+' ║'.white+'¤¤¤¤¤¤¤¤¤¤¤║'.red+
-  '\n║¤¤¤¤¤¤¤¤¤¤¤'.red+'║ '.white+'╚════╝'.red+' ║'.white+'¤¤¤¤¤¤¤¤¤¤¤║'.red+
-  '\n║¤¤¤¤¤¤¤¤¤¤¤'.red+'╚════════╝'.white+'¤¤¤¤¤¤¤¤¤¤¤║'.red+
-  '\n║¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
-  '\n╚════════════════════════════════╝'.red;
+  var logo = '\n'+
+  '\n   ╔══════════════════════════════════╗'.red+
+  '\n   ║¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤'.red+'╔══════════════════════╗'.white+'¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤'.red+'║ '.white+'╔══════════════════╗'.red+' ║'.white+'¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤'.red+'║ '.white+'║ ╔═════╗  ╔═════╗ ║'.red+' ║'.white+'¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤'.red+'║ '.white+'╚═╝'.red+' ╔═╗ '.white+'║  ║'.red+' ╔═╗ '.white+'╚═╝'.red+' ║'.white+'¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤'.red+'╚═════╝'.white+'¤'.red+'║ '.white+'║  ║'.red+' ║'.white+'¤'.red+'╚═════╝'.white+'¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤¤¤¤¤¤¤¤¤'.red+'║ '.white+'║  ║'.red+' ║'.white+'¤¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤¤¤¤¤¤¤¤¤'.red+'║ '.white+'║  ║'.red+' ║'.white+'¤¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤¤¤¤¤¤¤¤¤'.red+'║ '.white+'║  ║'.red+' ║'.white+'¤¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤¤¤¤¤¤¤¤¤'.red+'║ '.white+'║  ║'.red+' ║'.white+'¤¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤¤¤¤¤¤¤¤'.red+'╔╝ '.white+'║  ║'.red+' ╚╗'.white+'¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤¤¤¤¤¤¤¤'.red+'║ '.white+'╔╝  ╚╗'.red+' ║'.white+'¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤¤¤¤¤¤¤¤'.red+'║ '.white+'╚════╝'.red+' ║'.white+'¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤¤¤¤¤¤¤¤'.red+'╚════════╝'.white+'¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
+  '\n   ║¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤║'.red+
+  '\n   ╚══════════════════════════════════╝'.red+
+  '\n\n';
 
   console.log(logo);
 
@@ -69,7 +115,7 @@ Generator.prototype.askFor = function askFor( argument ) {
       return this.emit( 'error', err );
     }
 
-	//curl -u 'username' -d '{"scopes":["repo"],"note":"push to gh-pages from travis"}' https://api.github.com/authorizations    
+  	//curl -u 'username' -d '{"scopes":["repo"],"note":"push to gh-pages from travis"}' https://api.github.com/authorizations    
 
     // - secure: <%=  secure %> # "PqA7vqn4A2OpI3Nj6RQYfDKINNBkoRVRsazkZfQPVqCgp6shJ65XXdp66eOT\nIpiVwms4aLAW1TWuMJbn5p3nBhqxkueKZtv8KIrB6Ho+MvRoC2P3S4sv7HJG\nDjA9K1+2H+neLn7kDdFIW42LtCPrAUgVoW0ixNH6gn8Ikf/CZig="
     // # User specific env variables
@@ -77,27 +123,18 @@ Generator.prototype.askFor = function askFor( argument ) {
     // - GH_PROJECT_NAME: <%= projectName %> # mduel
     // - GH_FULL_NAME: <%= fullName %> # Patrick Williams 
     // - GH_EMAIL: <%= email %> #pwmckenna@gmail.com
-
-    var secure = "\"PqA7vqn4A2OpI3Nj6RQYfDKINNBkoRVRsazkZfQPVqCgp6shJ65XXdp66eOT\nIpiVwms4aLAW1TWuMJbn5p3nBhqxkueKZtv8KIrB6Ho+MvRoC2P3S4sv7HJG\nDjA9K1+2H+neLn7kDdFIW42LtCPrAUgVoW0ixNH6gn8Ikf/CZig=\"";
-
-    this.secure = secure;
     this.userName = props.userName;
     this.projectName = props.projectName;
     this.fullName = props.fullName;
     this.email = props.email;
-    console.log(this, props);
-    cb();
-  }.bind( this ));
-};
 
-Generator.prototype.writeFiles = function createManifest() {
-  var data = {
-  	secure: this.secure,
-    userName: this.userName,
-    projectName: this.projectName,
-    fullName: this.fullName,
-    email: this.email
-  };
-  this.directory( '.', '.' );
-  this.template( '.travis.yml', '.travis.yml', data );
+    generateOAuthToken(props.userName, function(token) {
+      encryptOAuthToken(token, function(secure) {
+        this.secure = secure;
+        this.directory( '.', '.' );
+        this.template( '.travis.yml', '.travis.yml', this );
+        cb();        
+      }.bind( this ));
+    }.bind( this ));
+  }.bind( this ));
 };
