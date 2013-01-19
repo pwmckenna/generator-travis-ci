@@ -1,6 +1,6 @@
-##*yeoman init travis-ci:[task]*
+##*yeoman init travis-ci:[sub-generator]*
 
-This is a [yeoman generator](https://github.com/yeoman/generators) that provides travis-ci setup for yeoman projects. Currently the only sub-task is *gh-pages*.
+This is a [yeoman generator](https://github.com/yeoman/generators) that provides travis-ci setup for yeoman projects. Currently the only sub-generator is *gh-pages*.
 
 ##*yeoman init travis-ci:gh-pages*
 
@@ -26,6 +26,11 @@ Available sub-generators:
 
 - travis-ci:gh-pages
 - suggestions?
+
+## In action
+
+![](http://s8.postimage.org/90spzjn9h/Screen_Shot_2013_01_19_at_12_55_32_AM.png)
+
 
 ## Contribute
 
