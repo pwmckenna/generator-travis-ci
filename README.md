@@ -11,7 +11,7 @@ Creates a *.travis.yml* file that tells travis-ci to build the yeoman project in
 __Warning!__ Currently you still have to log into travis-ci.org and enable the hooks for your specific repo, which is kind of a drag. Also, it assumes that you have the travis gem installed.
 
 
-# Travis-ci generator [![Build Status](https://secure.travis-ci.org/pwmckenna/yeoman-travis-ci.png?branch=master)](http://travis-ci.org/pwmckenna/yeoman-travis-ci)
+# Travis-ci generator
 
 > Aims to make yeoman sites work similar to jekyll sites on github pages. Commit the raw files and what is served is the built site.
 
@@ -31,6 +31,8 @@ Available sub-generators:
 
 ![](http://s8.postimage.org/90spzjn9h/Screen_Shot_2013_01_19_at_12_55_32_AM.png)
 
+
+Generated .travis.yml file can be seen [here](https://github.com/pwmckenna/mduel/blob/master/.travis.yml).
 
 ## Contribute
 
