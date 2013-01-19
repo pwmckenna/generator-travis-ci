@@ -20,6 +20,6 @@
   "bin": "",
   "homepage": "https://github.com/pwmckenna/yeoman-travis-ci",
   "dependencies": {
-    "yeoman": "~0.9.6"
+    "yeoman-generators": "https://github.com/yeoman/generators/archive/master.tar.gz"
   }
 }
