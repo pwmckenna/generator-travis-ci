@@ -1,8 +1,20 @@
-#yeoman init travis-ci:[sub-generator]
+#yeoman init travis-ci
 
-This is a [yeoman generator](https://github.com/yeoman/generators) that provides travis-ci setup for yeoman projects. Currently the only sub-generator is *gh-pages*.
+This is a [yeoman generator](https://github.com/yeoman/generators) that provides travis-ci setup for yeoman projects.
 
-## gh-pages sub-generator
+Available sub-generators:
+
+- all
+- gh-pages
+- suggestions?
+
+## all
+
+> Simply sets up travis-ci.org to track your project and creates a basic .travis.yml that runs `travis test` on each commit.
+
+Usage: `yeoman init travis-ci`
+
+## gh-pages
 
 > Aims to make yeoman sites work similar to jekyll sites on github pages. Commit the raw files and what is served is the built site.
 
@@ -12,11 +24,6 @@ This is a [yeoman generator](https://github.com/yeoman/generators) that provides
 
 
 Usage: `yeoman init travis-ci:gh-pages`
-
-Available sub-generators:
-
-- travis-ci:gh-pages
-- suggestions?
 
 ### In action
 
