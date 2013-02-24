@@ -1,6 +1,6 @@
 var path = require('path');
 var util = require('util');
-var yeoman = require('yeoman');
+var yeoman = require('yeoman-generator');
 var spawn = require('child_process').spawn;
 
 function generateOAuthToken(user, success, error) {
