@@ -22,7 +22,14 @@
   "bin": "",
   "homepage": "https://github.com/pwmckenna/generator-travis-ci",
   "dependencies": {
-    "yeoman-generator": "~0.10.0"
+    "yeoman-generator": "~0.10.0",
+    "q": "~0.8.12",
+    "underscore": "~1.4.4"
+  },
+  "devDependencies": {
+    "grunt": "0.4.0rc7",
+    "grunt-contrib-jshint": "0.1.1rc6",
+    "matchdep": "~0.1.1"
   },
   "engines": {
     "node": ">=0.8.0"
