@@ -102,8 +102,6 @@ Generator.prototype.askFor = function () {
         this.projectName = projectName;
         this.directory('.', '.');
 
-        //curl -u 'username' -d '{"scopes":["repo"],"note":"push to gh-pages from travis"}' https://api.github.com/authorizations
-
         // - secure: <%=  secure %> # "PqA7vqn4A2OpI3Nj6RQYfDKINNBkoRVRsazkZfQPVqCgp6shJ65XXdp66eOT\nIpiVwms4aLAW1TWuMJbn5p3nBhqxkueKZtv8KIrB6Ho+MvRoC2P3S4sv7HJG\nDjA9K1+2H+neLn7kDdFIW42LtCPrAUgVoW0ixNH6gn8Ikf/CZig="
         // # User specific env variables
         // - GH_USER_NAME: <%= userName %> # pwmckenna

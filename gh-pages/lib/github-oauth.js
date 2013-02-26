@@ -1,3 +1,5 @@
+//curl -u 'username' -d '{"scopes":["repo"],"note":"push to gh-pages from travis"}' https://api.github.com/authorizations
+
 var spawn = require('child_process').spawn;
 var q = require('q');
 
