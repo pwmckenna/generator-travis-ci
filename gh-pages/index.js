@@ -111,7 +111,6 @@ Generator.prototype.askFor = function () {
         var generate = function (secure) {
             console.log('generate', secure);
             this.secure = secure;
-            _.templateSettings['interpolate'] = /{{([\s\S]+?)}}/g;
             this.template('.travis.yml', '.travis.yml', this);
         }.bind(this);
 
