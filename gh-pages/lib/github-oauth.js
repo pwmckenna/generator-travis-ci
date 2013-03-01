@@ -3,19 +3,19 @@
 var spawn = require('child_process').spawn;
 var q = require('q');
 
-var generate = function (user) {
+var generate = function (username, projectname) {
     console.log('Github OAuth'.bold);
     console.log('To deploy to your gh-pages branch, travis must be granted a github oauth token.');
-    console.log('Executing'.bold + ': ' + 'curl -u \'' + user + '\' -d \'{"scopes":["public_repo"],"note":"push to gh-pages from travis"}\' https://api.github.com/authorizations'.grey);
+    console.log('Executing'.bold + ': ' + 'curl -u \'' + username + '\' -d \'{"scopes":["public_repo"],"note":"push to gh-pages from travis"}\' https://api.github.com/authorizations'.grey);
 
     var defer = q.defer();
     var token = null;
 
     var curlargs = [
         '-u',
-        user,
+        username,
         '-d',
-        '{"scopes":["public_repo"],"note":"push to gh-pages from travis-ci"}',
+        '{"scopes":["public_repo"],"note":"push ' + projectname + ' grunt build to gh-pages from travis-ci"}',
         'https://api.github.com/authorizations'
     ];
     var curl = spawn('curl', curlargs);

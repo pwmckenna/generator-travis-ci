@@ -47,6 +47,8 @@ after_success:
     - cp -R ../dist/* .
     - cp ../dist/.* .
     - git add -f .
+    - git config user.email "<%= email %>"
+    - git config user.name "<%= name %>"
     - git commit -am "adding the yeoman build files to gh-pages"
     # Any command that using GH_OAUTH_TOKEN must pipe the output to /dev/null to not expose your oauth token
     - git push https://<%="${GH_OAUTH_TOKEN}"%>@github.com/<%="${GH_USER_NAME}"%>/<%="${GH_PROJECT_NAME}"%> gh-pages > /dev/null 2>&1

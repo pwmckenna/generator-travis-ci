@@ -2,6 +2,8 @@
 var path = require('path');
 var util = require('util');
 var yeoman = require('yeoman-generator');
+var q = require('q');
+var request = require('request');
 //local dependencies
 var gitconfig = require('./lib/git-config');
 var gitoauth = require('./lib/github-oauth');
@@ -106,15 +108,28 @@ Generator.prototype.askFor = function () {
         // # User specific env variables
         // - GH_USER_NAME: <%= userName %> # pwmckenna
         // - GH_PROJECT_NAME: <%= projectName %> # mduel
-        var oauth = gitoauth.generate.bind(this, this.userName);
+        var oauth = gitoauth.generate.bind(this, this.userName, this.projectName);
+        var userInfo = function (token) {
+            var defer = q.defer();
+            request.get('https://api.github.com/user?access_token=' + token, function(error, result, body) {
+                if(error) {
+                    defer.reject(error);
+                } else {
+                    var json = JSON.parse(body);
+                    this.email = json.email;
+                    this.name = json.name;
+                    defer.resolve(token);
+                }
+            }.bind(this));
+            return defer.promise;
+        }.bind(this);
         var encrypt = travis.encrypt.bind(this, this.userName, this.projectName);
         var generate = function (secure) {
-            console.log('generate', secure);
             this.secure = secure;
             this.template('.travis.yml', '.travis.yml', this);
         }.bind(this);
 
-        var chain = oauth().then(encrypt).then(generate);
+        var chain = oauth().then(userInfo).then(encrypt).then(generate);
         chain.done(cb);
         chain.fail(cb);
     }.bind(this), cb);
