@@ -25,7 +25,9 @@
     "yeoman-generator": "~0.10.0",
     "q": "~0.8.12",
     "underscore": "~1.4.4",
-    "request": "~2.14.0"
+    "request": "~2.14.0",
+    "github": "~0.1.8",
+    "open": "0.0.3"
   },
   "devDependencies": {
     "grunt": "0.4.0rc7",
