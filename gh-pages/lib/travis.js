@@ -1,42 +1,71 @@
-var spawn = require('child_process').spawn;
+var request = require('request');
 var q = require('q');
+var _ = require('lodash');
 
-var encrypt = function (username, projectname, token) {
-    console.log('Encrypting OAuth Token'.bold);
-    console.log('To prevent your oauth token from being visible in travis-ci logs, it must be encrypted using the `travis` gem.');
-    console.log('Executing'.bold + ': ' + 'travis encrypt GH_OAUTH_TOKEN=****************************************');
-    console.log('\n\ngithub oauth token encryption...' + 'success'.green.bold + '\n\n');
+var TRAVIS_API_URL_BASE = 'https://api.travis-ci.org';
 
+var generateAuthenticatedHeaders = function(access_token) {
+    var headers = {
+        'Accept': 'application/vnd.travis-ci.2+json, */*; q=0.01'
+    };
+    if(access_token) {
+        headers['Authorization'] = 'token ' + access_token;
+    }
+    return headers;
+}
+
+var TravisApi = function() {
+
+};
+TravisApi.prototype.get = function (path, qs) {
     var defer = q.defer();
-    var secure = null;
-
-    var travisargs = [
-        'encrypt',
-        '-r',
-        username + '/' + projectname,
-        token
-    ];
-    var travis = spawn('travis', travisargs);
-
-    travis.stdout.on('data', function (data) {
-        secure = '' + data;
-    });
-
-    travis.stderr.on('data', function (data) {
-        var err = '' + data;
-        console.log(err);
-    });
-
-    travis.on('exit', function () {
-        if (secure) {
-            defer.resolve(secure);
-        } else {
+    request.get({
+        url: TRAVIS_API_URL_BASE + path,
+        qs: qs,
+        headers: generateAuthenticatedHeaders(this.access_token)
+    }, function (err, res, body) {
+        if(err || res.statusCode !== 200) {
             defer.reject();
+        } else {
+            defer.resolve(JSON.parse(body));
         }
     });
     return defer.promise;
 };
 
-module.exports = {
-    encrypt: encrypt
+TravisApi.prototype.post = function (path, form) {
+    var defer = q.defer();
+    request.post({
+        url: TRAVIS_API_URL_BASE + path,
+        form: form,
+        headers: generateAuthenticatedHeaders(this.access_token)
+    }, function (err, res, body) {
+        if(err || res.statusCode !== 200) {
+            defer.reject();
+        } else {
+            defer.resolve(JSON.parse(body));
+        }
+    });
+    return defer.promise;
 };
+TravisApi.prototype.put = function (path, json) {
+    var defer = q.defer();
+    request.put({
+        url: TRAVIS_API_URL_BASE + path,
+        json: json,
+        headers: generateAuthenticatedHeaders(this.access_token)
+    }, function (err, res, body) {
+        if(err || res.statusCode !== 200) {
+            defer.reject();
+        } else {
+            defer.resolve(body);
+        }
+    });
+    return defer.promise;
+};
+TravisApi.prototype.authorize = function(access_token) {
+    console.log('authorize', access_token);
+    this.access_token = access_token;
+};
+
+module.exports = TravisApi;

@@ -23,7 +23,7 @@ env:
         #
         # User specific env variables
         - secure: <%= secure %>
-        - GH_USER_NAME: <%= userName %>
+        - GH_OWNER: <%= owner %>
         - GH_PROJECT_NAME: <%= projectName %>
         # This .travis.yml file instructs travis-ci.org to build your master branch using `yeoman build`
         # and deploy the output to your project's gh-pages branch.
@@ -40,7 +40,7 @@ script:
     - grunt
 after_success:
     # Any command that using GH_OAUTH_TOKEN must pipe the output to /dev/null to not expose your oauth token
-    - git submodule add -b gh-pages https://<%="${GH_OAUTH_TOKEN}"%>@github.com/<%="${GH_USER_NAME}"%>/<%="${GH_PROJECT_NAME}"%> site 2>&1
+    - git submodule add -b gh-pages https://<%="${GH_OAUTH_TOKEN}"%>@github.com/<%="${GH_OWNER}"%>/<%="${GH_PROJECT_NAME}"%> site 2>&1
     - cd site
     - git checkout gh-pages
     - git rm -r .
@@ -51,4 +51,4 @@ after_success:
     - git config user.name "<%= name %>"
     - git commit -am "adding the yeoman build files to gh-pages"
     # Any command that using GH_OAUTH_TOKEN must pipe the output to /dev/null to not expose your oauth token
-    - git push https://<%="${GH_OAUTH_TOKEN}"%>@github.com/<%="${GH_USER_NAME}"%>/<%="${GH_PROJECT_NAME}"%> gh-pages > /dev/null 2>&1
+    - git push https://<%="${GH_OAUTH_TOKEN}"%>@github.com/<%="${GH_OWNER}"%>/<%="${GH_PROJECT_NAME}"%> gh-pages > /dev/null 2>&1
