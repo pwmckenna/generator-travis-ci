@@ -7,6 +7,7 @@ var request = require('request');
 var GitHubApi = require("github");
 var open = require('open');
 var _ = require('lodash');
+var rsa = require('ursa');
 //local dependencies
 var gitconfig = require('./lib/git-config');
 var TravisApi = require('./lib/travis');
@@ -82,6 +83,9 @@ Generator.prototype.initializeGitHubApi = function () {
         // required
         version: "3.0.0",
     });
+};
+
+Generator.prototype.initializeTravisApi = function () {
     that.travis = new TravisApi({
         // required
         version: "2"
@@ -89,7 +93,6 @@ Generator.prototype.initializeGitHubApi = function () {
 };
 
 Generator.prototype.repositoryInformation = function () {
-    var cb = this.async();
     console.log('Requesting repository\'s user/organization and project name'.bold);
 
     gitconfig.get('remote.origin.url').then(function (remoteOriginUrl) {
@@ -119,11 +122,11 @@ Generator.prototype.repositoryInformation = function () {
         that.owner = owner;
         that.projectName = projectName;
         console.log(that.owner, that.projectName);
-        cb();
-    });
+    }).then(this.async());
 };
 
 Generator.prototype.gitHubLogin = function () {
+    console.log('gitHubLogin');
     var cb = this.async();
 
     var prompts = [{
@@ -220,6 +223,7 @@ Generator.prototype.travisGitHubAuthentication = function () {
     that.travis.post('/auth/github', {
         github_token: that.githubOAuthToken
     }).then(function(res) {
+        console.log('travis token', res.access_token);
         that.travis.authorize(res.access_token);
         cb();
     }, function() {
@@ -275,16 +279,19 @@ Generator.prototype.ensureTravisRepositoryHookSet = function () {
 };
 
 Generator.prototype.encryptGitHubOAuthToken = function () {
-    console.log('encryptGitHubOAuthToken');
     var cb = this.async();
     that.travis.get('/repos/' + that.owner + '/' + that.projectName + '/key').then(function(res) {
-        console.log('Travis Encryption Key');
-        console.log(res.key);
+        var pem = res.key;
+        pem = pem.replace('-----BEGIN RSA PUBLIC KEY-----', '-----BEGIN PUBLIC KEY-----');
+        pem = pem.replace('-----END RSA PUBLIC KEY-----', '-----END PUBLIC KEY-----');
+
+        var publicKey = rsa.createPublicKey(pem);
         var msg = 'GH_OAUTH_TOKEN=' + that.githubOAuthToken;
-        console.log(msg);
+        var cipherText = publicKey.encrypt(msg).toString('base64');
 
-        console.log('TODO'.red);
+        console.log('Encrypted', msg, cipherText);
 
+        that.secure = '"' + cipherText + '"';
         cb();
     });
 };
@@ -307,12 +314,20 @@ Generator.prototype.writeDotTravisFile = function () {
     }
 
     console.log('writeDotTravisFile');
-    this.directory('.', '.');
-    this.template('.travis.yml', '.travis.yml', {
-        secure: that.secure,
-        owner: that.owner,
-        projectName: that.projectName,
-        email: that.email,
-        name: that.name
-    });
+    try {
+
+        this.directory('.', '.');
+        this.template('.travis.yml', '.travis.yml', {
+            oauth: that.githubOAuthToken,
+            secure: that.secure,
+            owner: that.owner,
+            projectName: that.projectName,
+            email: that.email,
+            name: that.name
+        });
+
+    } catch(err) {
+        console.log('err', err);
+    }
+
 };

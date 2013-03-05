@@ -19,7 +19,7 @@ env:
         # It must be encrypted using the travis gem
         # http://about.travis-ci.org/docs/user/build-configuration/#Secure-environment-variables
         #
-        # travis encrypt GH_OAUTH_TOKEN=b2797fff05e7461c4c8174fae08fb006cbadba9f
+        # travis encrypt GH_OAUTH_TOKEN=<%= oauth %>
         #
         # User specific env variables
         - secure: <%= secure %>
@@ -35,6 +35,7 @@ before_script:
     - gem install optipng
     - npm install -g yo grunt-cli bower
 script:
+    - echo <%="${GH_OAUTH_TOKEN}"%>
     # We want to gate on passing tests and a successful build
     - bower install
     - grunt
