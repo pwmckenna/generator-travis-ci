@@ -224,7 +224,8 @@ Generator.prototype.travisGitHubAuthentication = function () {
         github_token: that.githubOAuthToken
     }).then(function(res) {
         console.log('travis token', res.access_token);
-        that.travis.authorize(res.access_token);
+        that.travisAccessToken = res.access_token;
+        that.travis.authorize(that.travisAccessToken);
         cb();
     }, function() {
         this.emit('travis login failed');
@@ -252,23 +253,25 @@ Generator.prototype.ensureTravisRepositoryHookSet = function () {
         return defer.promise;
     };
 
+    var setHook = function (hook) {
+        //no need to set the hook if its already set
+        if(hook.active) {
+            cb();
+            return;
+        }
+        //lets set the hook
+        hook.active = true;
+        that.travis.put('/hooks/' + hook.id, {
+            hook: hook
+        }).then(function(res) {
+            cb();
+        }, function(err) {
+            this.emit('travis hook set failed', err)
+        }.bind(this));
+    };
+
     var waitUntilHookSet = function () {
-        getHook().then(function (hook) {
-            //no need to set the hook if its already set
-            if(hook.active) {
-                cb();
-                return;
-            }
-            //lets set the hook
-            hook.active = true;
-            that.travis.put('/hooks/' + hook.id, {
-                hook: hook
-            }).then(function(res) {
-                cb();
-            }, function(err) {
-                this.emit('travis hook set failed', err)
-            }.bind(this));
-        }, function () {
+        getHook().then(setHook, function () {
             setTimeout(waitUntilHookSet, 3000);
         });
     }.bind(this);
@@ -289,10 +292,23 @@ Generator.prototype.encryptGitHubOAuthToken = function () {
         var msg = 'GH_OAUTH_TOKEN=' + that.githubOAuthToken;
         var cipherText = publicKey.encrypt(msg).toString('base64');
 
-        console.log('Encrypted', msg, cipherText);
-
-        that.secure = '"' + cipherText + '"';
-        cb();
+        request.get({
+            url:'http://travis-encrypt.herokuapp.com',
+            qs: {
+                access_token: that.travisAccessToken,
+                repository: that.owner + '/' + that.projectName,
+                msg: msg
+            }
+        }, function(err, res, json) {
+            if(err) {
+                console.log('error encrypting github oauth key');
+                return this.emit('error encrypting github oauth key', err);
+            } else {
+                console.log('success encrypting github oauth key', json);
+                that.secure = json;
+                cb();
+            }
+        }.bind(this));
     });
 };
 
