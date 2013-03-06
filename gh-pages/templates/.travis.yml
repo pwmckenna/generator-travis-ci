@@ -19,7 +19,7 @@ env:
         # It must be encrypted using the travis gem
         # http://about.travis-ci.org/docs/user/build-configuration/#Secure-environment-variables
         #
-        # travis encrypt GH_OAUTH_TOKEN=<%= oauth %>
+        # travis encrypt GH_OAUTH_TOKEN=XXXXXXXXXXXXXXX
         #
         # User specific env variables
         - secure: <%= secure %>
@@ -35,7 +35,6 @@ before_script:
     - gem install optipng
     - npm install -g yo grunt-cli bower
 script:
-    - echo <%="${GH_OAUTH_TOKEN}"%>
     # We want to gate on passing tests and a successful build
     - bower install
     - grunt
@@ -43,7 +42,7 @@ after_success:
     # Any command that using GH_OAUTH_TOKEN must pipe the output to /dev/null to not expose your oauth token
     - git submodule add -b gh-pages https://<%="${GH_OAUTH_TOKEN}"%>@github.com/<%="${GH_OWNER}"%>/<%="${GH_PROJECT_NAME}"%> site 2>&1
     - cd site
-    - git checkout gh-pages
+    - if git checkout gh-pages; then; else git checkout -b gh-pages; fi
     - git rm -r .
     - cp -R ../dist/* .
     - cp ../dist/.* .
