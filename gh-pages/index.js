@@ -93,8 +93,6 @@ Generator.prototype.initializeTravisApi = function () {
 };
 
 Generator.prototype.repositoryInformation = function () {
-    console.log('Requesting repository\'s user/organization and project name'.bold);
-
     gitconfig.get('remote.origin.url').then(function (remoteOriginUrl) {
         if (!remoteOriginUrl) {
             console.log('This repository is not a valid github repository.');
@@ -126,7 +124,6 @@ Generator.prototype.repositoryInformation = function () {
 };
 
 Generator.prototype.gitHubLogin = function () {
-    console.log('gitHubLogin');
     var cb = this.async();
 
     var prompts = [{
@@ -178,7 +175,6 @@ Generator.prototype.ensureTravisAppAuthorized = function () {
             })) {
                 defer.resolve(res);
             } else {
-                console.log('rejecting');
                 defer.reject(err);
             }
         });
@@ -223,7 +219,6 @@ Generator.prototype.travisGitHubAuthentication = function () {
     that.travis.post('/auth/github', {
         github_token: that.githubOAuthToken
     }).then(function(res) {
-        console.log('travis token', res.access_token);
         that.travisAccessToken = res.access_token;
         that.travis.authorize(that.travisAccessToken);
         cb();
@@ -301,10 +296,10 @@ Generator.prototype.encryptGitHubOAuthToken = function () {
             }
         }, function(err, res, json) {
             if(err) {
-                console.log('error encrypting github oauth key');
-                return this.emit('error encrypting github oauth key', err);
+                console.log('error encrypting github oauth token');
+                return this.emit('error encrypting github oauth token', err);
             } else {
-                console.log('success encrypting github oauth key', json);
+                console.log('success encrypting github oauth token');
                 that.secure = json;
                 cb();
             }
@@ -329,21 +324,13 @@ Generator.prototype.writeDotTravisFile = function () {
         return this.emit('user\'s full name unavailable');
     }
 
-    console.log('writeDotTravisFile');
-    try {
-
-        this.directory('.', '.');
-        this.template('.travis.yml', '.travis.yml', {
-            oauth: that.githubOAuthToken,
-            secure: that.secure,
-            owner: that.owner,
-            projectName: that.projectName,
-            email: that.email,
-            name: that.name
-        });
-
-    } catch(err) {
-        console.log('err', err);
-    }
-
+    this.directory('.', '.');
+    this.template('.travis.yml', '.travis.yml', {
+        oauth: that.githubOAuthToken,
+        secure: that.secure,
+        owner: that.owner,
+        projectName: that.projectName,
+        email: that.email,
+        name: that.name
+    });
 };
