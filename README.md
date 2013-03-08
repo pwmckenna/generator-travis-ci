@@ -2,23 +2,27 @@
 
 This is a [yeoman generator](https://github.com/yeoman/generator) that provides travis-ci setup for yeoman projects.
 
-## install
+## installation
 
-> npm install generator-travis-ci
+`npm install generator-travis-ci`
 
-Available sub-generators:
+## requirements
 
-- default
-- gh-pages
-- suggestions?
+Travis is deeply integrated with github, and in order to set all the travis hooks for you, this generator must be run on project hosted on github. Your git remotes should looks something like this:
 
-## default
+`git remote -v`
+> origin  git@github.com:pwmckenna/generator-travis-ci.git (fetch)  
+> origin	git@github.com:pwmckenna/generator-travis-ci.git (push)
+
+## sub-generators:
+
+### default generator
 
 > Simply sets up travis-ci.org to track your project and creates a basic .travis.yml that runs `npm test` on each commit.
 
 Usage: `yo travis-ci`
 
-## gh-pages
+### gh-pages generator
 
 > Aims to make yeoman sites work similar to jekyll sites on github pages. Commit the raw files into master and what is served via gh-pages is `grunt build` output.
 
@@ -26,9 +30,9 @@ Usage: `yo travis-ci`
 
 Usage: `yo travis-ci:gh-pages`
 
-### In action
+### suggestions?
 
-![](http://s8.postimage.org/90spzjn9h/Screen_Shot_2013_01_19_at_12_55_32_AM.png)
+If you have suggestions for common yeoman/grunt testing/deployment tasks that could be handled best by a continuous integration service, make a pull request or shoot me a message!
 
 ## Contribute
 
