@@ -33,7 +33,7 @@ before_script:
     - gem install compass
     - gem install jpegtran
     - gem install optipng
-    - npm install -g yo grunt-cli bower
+    - npm install -g grunt-cli bower
 script:
     # We want to gate on passing tests and a successful build
     - bower install
