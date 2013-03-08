@@ -1,12 +1,12 @@
-#generator-travis-ci
+# *generator-travis-ci*
 
-This is a [yeoman generator](https://github.com/yeoman/generator) that provides travis-ci setup for yeoman projects.
+This is a [yeoman](http://yeoman.io) [generator](https://github.com/yeoman/generator) that provides travis-ci setup options for yeoman projects.
 
-## installation
+## Installation
 
 `npm install generator-travis-ci`
 
-## requirements
+## Requirements
 
 Travis is deeply integrated with github, and in order to set all the travis hooks for you, this generator must be run on project hosted on github. Your git remotes should looks something like this:
 
@@ -14,7 +14,7 @@ Travis is deeply integrated with github, and in order to set all the travis hook
 > origin  git@github.com:pwmckenna/generator-travis-ci.git (fetch)  
 > origin	git@github.com:pwmckenna/generator-travis-ci.git (push)
 
-## sub-generators:
+## Sub-Generators:
 
 ### default generator
 
