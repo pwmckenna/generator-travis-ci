@@ -18,7 +18,11 @@ Travis is deeply integrated with github, and in order to set all the travis hook
 
 ### default generator
 
-> Simply sets up travis-ci.org to track your project and creates a basic .travis.yml that runs `npm test` on each commit.
+> Sets up travis-ci.org to track your project and creates a basic .travis.yml that runs `grunt` on each commit. 
+
+> You can then display your projects build/test status in your README or elsewhere like below: 
+
+> [![Build Status](https://travis-ci.org/pwmckenna/generator-travis-ci.png?branch=master)](https://travis-ci.org/pwmckenna/generator-travis-ci)
 
 Usage: `yo travis-ci`
 
