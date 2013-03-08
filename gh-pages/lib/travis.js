@@ -1,20 +1,19 @@
 var request = require('request');
 var q = require('q');
-var _ = require('lodash');
 
 var TRAVIS_API_URL_BASE = 'https://api.travis-ci.org';
 
-var generateAuthenticatedHeaders = function(access_token) {
+var generateAuthenticatedHeaders = function (access_token) {
     var headers = {
         'Accept': 'application/vnd.travis-ci.2+json, */*; q=0.01'
     };
-    if(access_token) {
-        headers['Authorization'] = 'token ' + access_token;
+    if (access_token) {
+        headers.Authorization = 'token ' + access_token;
     }
     return headers;
-}
+};
 
-var TravisApi = function() {
+var TravisApi = function () {
 
 };
 TravisApi.prototype.get = function (path, qs) {
@@ -24,7 +23,7 @@ TravisApi.prototype.get = function (path, qs) {
         qs: qs,
         headers: generateAuthenticatedHeaders(this.access_token)
     }, function (err, res, body) {
-        if(err || res.statusCode !== 200) {
+        if (err || res.statusCode !== 200) {
             defer.reject();
         } else {
             defer.resolve(JSON.parse(body));
@@ -40,7 +39,7 @@ TravisApi.prototype.post = function (path, form) {
         form: form,
         headers: generateAuthenticatedHeaders(this.access_token)
     }, function (err, res, body) {
-        if(err || res.statusCode !== 200) {
+        if (err || res.statusCode !== 200) {
             defer.reject();
         } else {
             defer.resolve(JSON.parse(body));
@@ -55,7 +54,7 @@ TravisApi.prototype.put = function (path, json) {
         json: json,
         headers: generateAuthenticatedHeaders(this.access_token)
     }, function (err, res, body) {
-        if(err || res.statusCode !== 200) {
+        if (err || res.statusCode !== 200) {
             defer.reject();
         } else {
             defer.resolve(body);
@@ -63,7 +62,7 @@ TravisApi.prototype.put = function (path, json) {
     });
     return defer.promise;
 };
-TravisApi.prototype.authorize = function(access_token) {
+TravisApi.prototype.authorize = function (access_token) {
     this.access_token = access_token;
 };
 

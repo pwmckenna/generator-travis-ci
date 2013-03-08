@@ -4,10 +4,10 @@ var util = require('util');
 var yeoman = require('yeoman-generator');
 var q = require('q');
 var request = require('request');
-var GitHubApi = require("github");
-var open = require('open');
+var GitHubApi = require('github');
+var browser = require('open');
 var _ = require('lodash');
-var rsa = require('ursa');
+//var rsa = require('ursa');
 //local dependencies
 var gitconfig = require('./lib/git-config');
 var TravisApi = require('./lib/travis');
@@ -81,15 +81,15 @@ Generator.prototype.displayLogo = function () {
 Generator.prototype.initializeGitHubApi = function () {
     that.github = new GitHubApi({
         // required
-        version: "3.0.0",
+        version: '3.0.0',
     });
 };
 
 Generator.prototype.initializeTravisApi = function () {
     that.travis = new TravisApi({
         // required
-        version: "2"
-    })
+        version: '2'
+    });
 };
 
 Generator.prototype.repositoryInformation = function () {
@@ -136,12 +136,12 @@ Generator.prototype.gitHubLogin = function () {
         silent: true
     }];
 
-    this.prompt(prompts, function(err, props) {
+    this.prompt(prompts, function (err, props) {
         if (err) {
             return this.emit('error', err);
         }
         that.github.authenticate({
-            type: "basic",
+            type: 'basic',
             username: props.username,
             password: props.password
         });
@@ -151,8 +151,8 @@ Generator.prototype.gitHubLogin = function () {
 
 Generator.prototype.gitHubUserInfo = function () {
     var cb = this.async();
-    that.github.user.get({}, function(err, res) {
-        if(err) {
+    that.github.user.get({}, function (err, res) {
+        if (err) {
             return this.emit('error', err);
         }
         that.name = res.name;
@@ -165,11 +165,11 @@ Generator.prototype.ensureTravisAppAuthorized = function () {
     var cb = this.async();
 
     //single check for travis-ci app authorization
-    var checkIfAuthorized = function() {
+    var checkIfAuthorized = function () {
         var defer = q.defer();
         that.github.authorization.getAll({
-        }, function(err, res) {
-            if(!err && _.any(res, function(authorization) {
+        }, function (err, res) {
+            if (!err && _.any(res, function (authorization) {
                 return authorization.app.name === 'Travis' &&
                     authorization.app.url === 'https://travis-ci.org';
             })) {
@@ -181,18 +181,20 @@ Generator.prototype.ensureTravisAppAuthorized = function () {
         return defer.promise;
     };
     //when the user presses a key, check for authorization
-    var waitUntilAuthorized = function() {
+    var waitUntilAuthorized = function () {
         this.prompt([{
             message: 'Travis-ci.org github signup not complete. Press any key to retry.'
-        }], function(err, props) {
+        }], function (err) {
+            console.log('I didn\'t quite catch that...I guess it was a key press?', err);
             checkIfAuthorized().then(cb, waitUntilAuthorized);
         });
     }.bind(this);
-    checkIfAuthorized().then(function() {
+    checkIfAuthorized().then(function () {
         cb();
-    }, function() {
+    }, function () {
         //the user hasn't authorized the travis-ci app...show them the way
-        open('https://github.com/login/oauth/authorize?client_id=f244293c729d5066cf27&redirect_uri=https%3A%2F%2Fapi.travis-ci.org%2Fauth%2Fhandshake&scope=public_repo%2Cuser%3Aemail&state=fpTyTGLMn9sZMjjYVLVhqA%3A%3A%3Ahttps%3A%2F%2Ftravis-ci.org%2F')
+        var url = 'https://github.com/login/oauth/authorize?client_id=f244293c729d5066cf27&redirect_uri=https%3A%2F%2Fapi.travis-ci.org%2Fauth%2Fhandshake&scope=public_repo%2Cuser%3Aemail&state=fpTyTGLMn9sZMjjYVLVhqA%3A%3A%3Ahttps%3A%2F%2Ftravis-ci.org%2F';
+        browser(url);
         waitUntilAuthorized();
     });
 };
@@ -204,7 +206,7 @@ Generator.prototype.generateGitHubOAuthToken = function () {
         scopes: ['public_repo'],
         note: 'Pushing ' + that.projectName + ' grunt builds to gh-pages using travis-ci',
         note_url: 'http://travis-ci.org'
-    }, function(err, res) {
+    }, function (err, res) {
         if (err) {
             return this.emit('error', err);
         }
@@ -218,11 +220,11 @@ Generator.prototype.travisGitHubAuthentication = function () {
 
     that.travis.post('/auth/github', {
         github_token: that.githubOAuthToken
-    }).then(function(res) {
+    }).then(function (res) {
         that.travisAccessToken = res.access_token;
         that.travis.authorize(that.travisAccessToken);
         cb();
-    }, function() {
+    }, function () {
         this.emit('travis login failed');
     }.bind(this));
 };
@@ -232,17 +234,17 @@ Generator.prototype.ensureTravisRepositoryHookSet = function () {
 
     var getHook = function () {
         var defer = q.defer();
-        that.travis.get('/hooks').then(function(res) {
+        that.travis.get('/hooks').then(function (res) {
             var hooks = res.hooks;
-            var hook = _.find(hooks, function(h) {
+            var hook = _.find(hooks, function (h) {
                 return h.name === that.projectName && h.owner_name === that.owner;
             });
-            if(hook) {
+            if (hook) {
                 defer.resolve(hook);
             } else {
                 defer.reject();
             }
-        }, function(err) {
+        }, function (err) {
             defer.reject(err);
         });
         return defer.promise;
@@ -250,7 +252,7 @@ Generator.prototype.ensureTravisRepositoryHookSet = function () {
 
     var setHook = function (hook) {
         //no need to set the hook if its already set
-        if(hook.active) {
+        if (hook.active) {
             cb();
             return;
         }
@@ -258,10 +260,10 @@ Generator.prototype.ensureTravisRepositoryHookSet = function () {
         hook.active = true;
         that.travis.put('/hooks/' + hook.id, {
             hook: hook
-        }).then(function(res) {
+        }).then(function () {
             cb();
-        }, function(err) {
-            this.emit('travis hook set failed', err)
+        }, function (err) {
+            this.emit('travis hook set failed', err);
         }.bind(this));
     };
 
@@ -278,24 +280,24 @@ Generator.prototype.ensureTravisRepositoryHookSet = function () {
 
 Generator.prototype.encryptGitHubOAuthToken = function () {
     var cb = this.async();
-    that.travis.get('/repos/' + that.owner + '/' + that.projectName + '/key').then(function(res) {
+    that.travis.get('/repos/' + that.owner + '/' + that.projectName + '/key').then(function (res) {
         var pem = res.key;
         pem = pem.replace('-----BEGIN RSA PUBLIC KEY-----', '-----BEGIN PUBLIC KEY-----');
         pem = pem.replace('-----END RSA PUBLIC KEY-----', '-----END PUBLIC KEY-----');
 
-        var publicKey = rsa.createPublicKey(pem);
         var msg = 'GH_OAUTH_TOKEN=' + that.githubOAuthToken;
-        var cipherText = publicKey.encrypt(msg).toString('base64');
+        // var publicKey = rsa.createPublicKey(pem);
+        // var cipherText = publicKey.encrypt(msg).toString('base64');
 
         request.get({
-            url:'http://travis-encrypt.herokuapp.com',
+            url: 'http://travis-encrypt.herokuapp.com',
             qs: {
                 access_token: that.travisAccessToken,
                 repository: that.owner + '/' + that.projectName,
                 msg: msg
             }
-        }, function(err, res, json) {
-            if(err) {
+        }, function (err, res, json) {
+            if (err) {
                 console.log('error encrypting github oauth token');
                 return this.emit('error encrypting github oauth token', err);
             } else {
@@ -308,19 +310,19 @@ Generator.prototype.encryptGitHubOAuthToken = function () {
 };
 
 Generator.prototype.writeDotTravisFile = function () {
-    if(!that.hasOwnProperty('secure')) {
+    if (!that.hasOwnProperty('secure')) {
         return this.emit('encrypted oauth token unavailable');
     }
-    if(!that.hasOwnProperty('owner')) {
+    if (!that.hasOwnProperty('owner')) {
         return this.emit('owner not determined');
     }
-    if(!that.hasOwnProperty('projectName')) {
+    if (!that.hasOwnProperty('projectName')) {
         return this.emit('project name not determined');
     }
-    if(!that.hasOwnProperty('email')) {
+    if (!that.hasOwnProperty('email')) {
         return this.emit('user email unavailable');
     }
-    if(!that.hasOwnProperty('name')) {
+    if (!that.hasOwnProperty('name')) {
         return this.emit('user\'s full name unavailable');
     }
 
