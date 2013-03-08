@@ -1,8 +1,8 @@
 Description:
-    This will generate a .travis.yml file that you can use with travis-ci.org to listen to your repo's master branch, and on every commit, run `yeoman build` and commit the built site to your repo's gh-pages branch.
+    This will generate a .travis.yml file that you can use with travis-ci.org to listen to your repo's master branch. On every commit, travis-ci will run `grunt` and if your tests pass and the build is successful, the built site will be committed to your repo's gh-pages branch (will create the branch if necessary).
 
 Example:
-    yeoman init travis-ci:gh-pages
+    yo travis-ci:gh-pages
 
     This will create:
         .travis.yml

@@ -1,36 +1,34 @@
-#yeoman init travis-ci
+#generator-travis-ci
 
-This is a [yeoman generator](https://github.com/yeoman/generators) that provides travis-ci setup for yeoman projects.
+This is a [yeoman generator](https://github.com/yeoman/generator) that provides travis-ci setup for yeoman projects.
+
+## install
+
+> npm install generator-travis-ci
 
 Available sub-generators:
 
-- all
+- default
 - gh-pages
 - suggestions?
 
-## all
+## default
 
-> Simply sets up travis-ci.org to track your project and creates a basic .travis.yml that runs `travis test` on each commit.
+> Simply sets up travis-ci.org to track your project and creates a basic .travis.yml that runs `npm test` on each commit.
 
-Usage: `yeoman init travis-ci`
+Usage: `yo travis-ci`
 
 ## gh-pages
 
-> Aims to make yeoman sites work similar to jekyll sites on github pages. Commit the raw files and what is served is the built site.
+> Aims to make yeoman sites work similar to jekyll sites on github pages. Commit the raw files into master and what is served via gh-pages is `grunt build` output.
 
-> Creates a *.travis.yml* file that tells travis-ci to build the yeoman project in your master branch after every commit and push the built site into your project's *gh-pages* branch. 
+> Creates a *.travis.yml* file that tells travis-ci to build the yeoman project in your master branch after every commit and push the built site into your project's *gh-pages* branch.
 
-> __Warning!__ Currently you still have to log into travis-ci.org and enable the hooks for your specific repo, which is kind of a drag. Also, it assumes that you have the travis gem installed.
-
-
-Usage: `yeoman init travis-ci:gh-pages`
+Usage: `yo travis-ci:gh-pages`
 
 ### In action
 
 ![](http://s8.postimage.org/90spzjn9h/Screen_Shot_2013_01_19_at_12_55_32_AM.png)
-
-
-Generated .travis.yml file can be seen [here](https://github.com/pwmckenna/mduel/blob/master/.travis.yml).
 
 ## Contribute
 
