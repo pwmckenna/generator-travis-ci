@@ -42,6 +42,19 @@ var parseOwnerFromRemoteOriginUrl = function (remoteOriginUrl) {
     }
 };
 
+var untilResolved = function (fn, delay) {
+    var defer = q.defer();
+    var wrapper = function () {
+        fn().then(function () {
+            defer.resolve.apply(this, arguments);
+        }, function () {
+            setTimeout(wrapper, delay);
+        });
+    };
+    wrapper();
+    return defer.promise;
+};
+
 module.exports = Generator;
 
 function Generator() {
@@ -128,12 +141,13 @@ Generator.prototype.gitHubLogin = function () {
 
     var prompts = [{
         name: 'username',
-        message: 'GitHub username',
+        message: 'GitHub Username',
         default: that.owner
     }, {
         name: 'password',
-        message: 'Password',
-        silent: true
+        message: 'GitHub Password',
+        silent: true,
+        replace: '*'
     }];
 
     this.prompt(prompts, function (err, props) {
@@ -233,80 +247,70 @@ Generator.prototype.ensureTravisRepositoryHookSet = function () {
     var cb = this.async();
 
     var getHook = function () {
-        var defer = q.defer();
-        that.travis.get('/hooks').then(function (res) {
+        return that.travis.get('/hooks').then(function (res) {
             var hooks = res.hooks;
             var hook = _.find(hooks, function (h) {
                 return h.name === that.projectName && h.owner_name === that.owner;
             });
             if (hook) {
-                defer.resolve(hook);
+                return q.resolve(hook);
             } else {
-                defer.reject();
+                return q.reject();
             }
-        }, function (err) {
-            defer.reject(err);
         });
-        return defer.promise;
     };
 
     var setHook = function (hook) {
         //no need to set the hook if its already set
         if (hook.active) {
-            cb();
-            return;
+            return q.resolve();
         }
         //lets set the hook
         hook.active = true;
-        that.travis.put('/hooks/' + hook.id, {
+        return that.travis.put('/hooks/' + hook.id, {
             hook: hook
-        }).then(function () {
-            cb();
-        }, function (err) {
-            this.emit('travis hook set failed', err);
-        }.bind(this));
+        });
     };
 
-    var waitUntilHookSet = function () {
-        getHook().then(setHook, function () {
-            setTimeout(waitUntilHookSet, 3000);
-        });
-    }.bind(this);
-
-    that.travis.post('/users/sync').then(waitUntilHookSet, function (err) {
-        this.emit('travis sync failed', err);
+    that.travis.post('/users/sync').then(function () {
+        return untilResolved(function () {
+            return getHook().then(setHook);
+        }, 3000);
+    }).then(function () {
+        cb();
+    }, function () {
+        this.emit('travis sync failed');
     }.bind(this));
 };
 
 Generator.prototype.encryptGitHubOAuthToken = function () {
     var cb = this.async();
-    that.travis.get('/repos/' + that.owner + '/' + that.projectName + '/key').then(function (res) {
-        var pem = res.key;
-        pem = pem.replace('-----BEGIN RSA PUBLIC KEY-----', '-----BEGIN PUBLIC KEY-----');
-        pem = pem.replace('-----END RSA PUBLIC KEY-----', '-----END PUBLIC KEY-----');
+    var msg = 'GH_OAUTH_TOKEN=' + that.githubOAuthToken;
+    // that.travis.get('/repos/' + that.owner + '/' + that.projectName + '/key').then(function (res) {
+    //     var pem = res.key;
+    //     pem = pem.replace('-----BEGIN RSA PUBLIC KEY-----', '-----BEGIN PUBLIC KEY-----');
+    //     pem = pem.replace('-----END RSA PUBLIC KEY-----', '-----END PUBLIC KEY-----');
 
-        var msg = 'GH_OAUTH_TOKEN=' + that.githubOAuthToken;
-        // var publicKey = rsa.createPublicKey(pem);
-        // var cipherText = publicKey.encrypt(msg).toString('base64');
-
-        request.get({
-            url: 'http://travis-encrypt.herokuapp.com',
-            qs: {
-                access_token: that.travisAccessToken,
-                repository: that.owner + '/' + that.projectName,
-                msg: msg
-            }
-        }, function (err, res, json) {
-            if (err) {
-                console.log('error encrypting github oauth token');
-                return this.emit('error encrypting github oauth token', err);
-            } else {
-                console.log('success encrypting github oauth token');
-                that.secure = json;
-                cb();
-            }
-        }.bind(this));
-    });
+    //     var publicKey = rsa.createPublicKey(pem);
+    //     var cipherText = publicKey.encrypt(msg).toString('base64');
+    // });
+    request.get({
+        url: 'http://travis-encrypt.herokuapp.com',
+        qs: {
+            access_token: that.travisAccessToken,
+            repository: that.owner + '/' + that.projectName,
+            msg: msg
+        }
+    }, function (err, res, json) {
+        if (err) {
+            console.log('error encrypting github oauth token');
+            return this.emit('error encrypting github oauth token', err);
+        } else {
+            console.log('success encrypting github oauth token');
+            that.secure = json;
+            cb();
+        }
+    }.bind(this));
 };
 
 Generator.prototype.writeDotTravisFile = function () {
