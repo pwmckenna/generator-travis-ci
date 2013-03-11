@@ -105,7 +105,6 @@ Generator.prototype.gitHubLogin = function () {
             username: props.username,
             password: props.password
         });
-        console.log('github auth complete');
         return q.resolve();
     }).then(this.async());
 };
@@ -116,15 +115,14 @@ Generator.prototype.gitHubUserInfo = function () {
     defer.promise.then(function (res) {
         that.name = res.name;
         that.email = res.email;
-        console.log('github info complete');
         return q.resolve();
     }).then(this.async());
 };
 
 //single check for travis-ci app authorization
-var checkIfTravisGitHubAppAuthorized = function (github) {
+Generator.prototype._checkIfTravisGitHubAppAuthorized = function () {
     var defer = q.defer();
-    github.authorization.getAll({}, defer.makeNodeResolver());
+    that.github.authorization.getAll({}, defer.makeNodeResolver());
     return defer.promise.then(function (res) {
         if (_.any(res, function (authorization) {
             return authorization.app.name === 'Travis' &&
@@ -137,28 +135,28 @@ var checkIfTravisGitHubAppAuthorized = function (github) {
     });
 };
 
-var showTravisAppAuthorizationSite = function () {
+Generator.prototype._showTravisAppAuthorizationSite = function () {
     //the user hasn't authorized the travis-ci app...show them the way
     var url = 'https://github.com/login/oauth/authorize?client_id=f244293c729d5066cf27&redirect_uri=https%3A%2F%2Fapi.travis-ci.org%2Fauth%2Fhandshake&scope=public_repo%2Cuser%3Aemail&state=fpTyTGLMn9sZMjjYVLVhqA%3A%3A%3Ahttps%3A%2F%2Ftravis-ci.org%2F';
     browser(url);
 };
 
-Generator.prototype.ensureTravisAppAuthorized = function () {
-    console.log('ensure travis app authorized');
+Generator.prototype._waitUntilTravisAppAuthorized = function () {
+    var defer = q.defer();
     //when the user presses a key, check for authorization
-    var waitUntilTravisAppAuthorized = function () {
-        var defer = q.defer();
-        this.prompt([{
-            message: 'Travis-ci.org GitHub signup not complete. Press any key to retry.'
-        }], defer.makeNodeResolver());
-        var check = _.partial(checkIfTravisGitHubAppAuthorized, that.github);
-        return defer.promise.then(check).fail(waitUntilTravisAppAuthorized);
-    }.bind(this);
+    this.prompt([{
+        message: 'Travis-ci.org GitHub signup not complete. Press any key to retry.'
+    }], defer.makeNodeResolver());
+    return defer.promise
+        .then(this._checkIfTravisGitHubAppAuthorized.bind(this))
+        .fail(this._waitUntilTravisAppAuthorized.bind(this));
+};
 
-    checkIfTravisGitHubAppAuthorized(that.github).fail(function () {
-        showTravisAppAuthorizationSite();
-        waitUntilTravisAppAuthorized();
-    }).then(this.async());
+Generator.prototype.ensureTravisAppAuthorized = function () {
+    this._checkIfTravisGitHubAppAuthorized().fail(function () {
+        this._showTravisAppAuthorizationSite();
+        return this._waitUntilTravisAppAuthorized();
+    }.bind(this)).then(this.async());
 };
 
 Generator.prototype.generateGitHubOAuthToken = function () {
@@ -192,11 +190,11 @@ Generator.prototype.travisGitHubAuthentication = function () {
     }).then(this.async());
 };
 
-var getTravisHook = function (travis, owner, project) {
-    return travis.get('/hooks').then(function (res) {
+Generator.prototype._getTravisHook = function () {
+    return that.travis.get('/hooks').then(function (res) {
         var hooks = res.hooks;
         var hook = _.find(hooks, function (h) {
-            return h.name === project && h.owner_name === owner;
+            return h.name === that.projectName && h.owner_name === that.owner;
         });
         if (hook) {
             return q.resolve(hook);
@@ -206,26 +204,24 @@ var getTravisHook = function (travis, owner, project) {
     });
 };
 
-var setTravisHook = function (travis, hook) {
+Generator.prototype._setTravisHook = function (hook) {
     //no need to set the hook if its already set
     if (hook.active) {
         return q.resolve();
     }
     //lets set the hook
     hook.active = true;
-    return travis.put('/hooks/' + hook.id, {
+    return that.travis.put('/hooks/' + hook.id, {
         hook: hook
     });
 };
 
 Generator.prototype.ensureTravisRepositoryHookSet = function () {
-    var get = _.partial(getTravisHook, that.travis, that.owner, that.projectName);
-    var set = _.partial(setTravisHook, that.travis);
     that.travis.post('/users/sync').then(function () {
         return untilResolved(function () {
-            return get().then(set);
-        }, 3000);
-    }).then(this.async());
+            return this._getTravisHook.call(this).then(this._setTravisHook.bind(this));
+        }.bind(this), 3000);
+    }.bind(this)).then(this.async());
 };
 
 //var rsa = require('ursa');
