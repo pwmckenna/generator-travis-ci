@@ -37,7 +37,7 @@ describe('travis-ci:gh-pages generator test', function () {
 
         var TravisGhPagesGenerator = proxyquire('../../gh-pages/', {
             './lib/git-config': {
-                'get': function(key) {
+                'get': function (key) {
                     assert(key === 'remote.origin.url', 'invalid git config get request');
                     return q.resolve('git@github.com:pwmckenna/generator-travis-ci.git');
                 }

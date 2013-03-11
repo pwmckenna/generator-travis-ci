@@ -10,7 +10,8 @@ module.exports = function (grunt) {
             all: [
                 'Gruntfile.js',
                 'app/**/*.js',
-                'gh-pages/**/*.js'
+                'gh-pages/**/*.js',
+                'test/**/*.js'
             ]
         },
         mochaTest: {
