@@ -37,6 +37,20 @@ function Generator() {
     yeoman.generators.Base.apply(this, arguments);
     this.appname = path.basename(process.cwd());
     this.desc('This generator creates a .travis.yml that tells travis-ci to build your yeoman project and push the build to your gh-pages branch, on every commit to master.');
+
+    this.dependencies = {
+        'path': path,
+        'util': util,
+        'yeoman-generator': yeoman,
+        'q': q,
+        'request': request,
+        'github': GitHubApi,
+        'open': browser,
+        'lodash': _,
+        'git-config': gitConfig,
+        'git-remote-parser': gitRemoteParser,
+        'travis-http': TravisApi
+    };
 }
 
 util.inherits(Generator, yeoman.generators.Base);
