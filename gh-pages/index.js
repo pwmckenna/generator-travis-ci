@@ -254,7 +254,7 @@ Generator.prototype.encryptGitHubOAuthToken = function () {
             defer.resolve(body);
         }
     });
-    defer.promise.then(function(body) {
+    defer.promise.then(function (body) {
         that.secure = body;
         return q.resolve();
     }).then(this.async());
