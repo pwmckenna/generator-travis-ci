@@ -169,14 +169,22 @@ Generator.prototype.generateGitHubOAuthToken = function () {
         note_url: 'http://travis-ci.org'
     }, defer.makeNodeResolver());
     defer.promise.then(function (res) {
-        that.githubOAuthToken = res.token;
+        that.githubOAuthAuthorization = res;
         return q.resolve();
     }).then(this.async());
 };
 
+Generator.prototype._revokeGitHubOAuthToken = function () {
+    var defer = q.defer();
+    that.github.authorization.delete({
+        id: that.githubOAuthAuthorization.id
+    }, defer.makeNodeResolver());
+    return defer.promise;
+};
+
 Generator.prototype.travisGitHubAuthentication = function () {
     that.travis.post('/auth/github', {
-        github_token: that.githubOAuthToken
+        github_token: that.githubOAuthAuthorization.token
     }).then(function (res) {
         that.travisAccessToken = res.access_token;
         that.travis.authorize(that.travisAccessToken);
@@ -233,7 +241,7 @@ Generator.prototype.ensureTravisRepositoryHookSet = function () {
 //};
 
 Generator.prototype.encryptGitHubOAuthToken = function () {
-    var msg = 'GH_OAUTH_TOKEN=' + that.githubOAuthToken;
+    var msg = 'GH_OAUTH_TOKEN=' + that.githubOAuthAuthorization.token;
     var defer = q.defer();
     request.get({
         url: 'http://travis-encrypt.herokuapp.com',
@@ -264,7 +272,7 @@ Generator.prototype.writeDotTravisFile = function () {
 
     this.directory('.', '.');
     this.template('.travis.yml', '.travis.yml', {
-        oauth: that.githubOAuthToken,
+        oauth: that.githubOAuthAuthorization.token,
         secure: that.secure,
         owner: that.owner,
         projectName: that.projectName,

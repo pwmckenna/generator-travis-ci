@@ -80,7 +80,9 @@ describe('travis-ci:gh-pages generator test', function () {
         generator.run({}, function () {
             // For now, just check that the file exists.
             helpers.assertFiles(['.travis.yml']);
-            done();
+            generator._revokeGitHubOAuthToken().then(function () {
+                done();
+            });
         });
     });
 });
