@@ -10,7 +10,7 @@ var _ = require('lodash');
 //local dependencies
 var gitConfig = require('./lib/git-config');
 var gitRemoteParser = require('./lib/git-remote-parser');
-var TravisApi = require('./lib/travis');
+var TravisApi = require('./lib/travis-http');
 
 var untilResolved = function (deferFunc, delay) {
     var defer = q.defer();
@@ -238,8 +238,8 @@ Generator.prototype.ensureTravisRepositoryHookSet = function () {
 //};
 
 Generator.prototype.encryptGitHubOAuthToken = function () {
-    var cb = this.async();
     var msg = 'GH_OAUTH_TOKEN=' + that.githubOAuthToken;
+    var defer = q.defer();
     request.get({
         url: 'http://travis-encrypt.herokuapp.com',
         qs: {
@@ -247,16 +247,17 @@ Generator.prototype.encryptGitHubOAuthToken = function () {
             repository: that.owner + '/' + that.projectName,
             msg: msg
         }
-    }, function (err, res, json) {
+    }, function (err, res, body) {
         if (err) {
-            console.log('error encrypting github oauth token');
-            return this.emit('error encrypting github oauth token', err);
+            defer.reject(err);
         } else {
-            console.log('success encrypting github oauth token');
-            that.secure = json;
-            cb();
+            defer.resolve(body);
         }
-    }.bind(this));
+    });
+    defer.promise.then(function(body) {
+        that.secure = body;
+        return q.resolve();
+    }).then(this.async());
 };
 
 Generator.prototype.writeDotTravisFile = function () {
