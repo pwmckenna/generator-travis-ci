@@ -10,7 +10,7 @@ var _ = require('lodash');
 //local dependencies
 var gitConfig = require('./lib/git-config');
 var gitRemoteParser = require('./lib/git-remote-parser');
-var TravisApi = require('./lib/travis-api');
+var TravisApi = require('./lib/travis');
 
 var untilResolved = function (deferFunc, delay) {
     var defer = q.defer();
@@ -131,7 +131,7 @@ var checkIfTravisGitHubAppAuthorized = function (github) {
     var defer = q.defer();
     github.authorization.getAll({}, defer.makeNodeResolver());
     return defer.promise.then(function (res) {
-        if(_.any(res, function (authorization) {
+        if (_.any(res, function (authorization) {
             return authorization.app.name === 'Travis' &&
                 authorization.app.url === 'https://travis-ci.org';
         })) {
@@ -142,7 +142,7 @@ var checkIfTravisGitHubAppAuthorized = function (github) {
     });
 };
 
-var showTravisAppAuthorizationSite = function() {
+var showTravisAppAuthorizationSite = function () {
     //the user hasn't authorized the travis-ci app...show them the way
     var url = 'https://github.com/login/oauth/authorize?client_id=f244293c729d5066cf27&redirect_uri=https%3A%2F%2Fapi.travis-ci.org%2Fauth%2Fhandshake&scope=public_repo%2Cuser%3Aemail&state=fpTyTGLMn9sZMjjYVLVhqA%3A%3A%3Ahttps%3A%2F%2Ftravis-ci.org%2F';
     browser(url);

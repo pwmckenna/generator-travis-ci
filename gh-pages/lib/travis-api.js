@@ -62,6 +62,7 @@ TravisApi.prototype.put = function (path, json) {
     });
     return defer.promise;
 };
+
 TravisApi.prototype.authorize = function (access_token) {
     this.access_token = access_token;
 };

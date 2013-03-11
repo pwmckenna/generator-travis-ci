@@ -12,7 +12,7 @@ var validHTTPSRemoteOriginUrl = function (remoteOriginUrl) {
 
 var validGitRemoteOriginUrl = function (remoteOriginUrl) {
     return typeof remoteOriginUrl === 'string' && remoteOriginUrl.match(GIT_REMOTE_REGEX);
-}
+};
 
 var validGitRemoteOriginUrl = function (remoteOriginUrl) {
     return remoteOriginUrl && typeof remoteOriginUrl === 'string' &&
@@ -24,7 +24,7 @@ var parseProjectNameFromRemoteOriginalUrl = function (remoteOriginUrl) {
         return remoteOriginUrl.match(SSH_REMOTE_REGEX)[2];
     } else if (validHTTPSRemoteOriginUrl(remoteOriginUrl)) {
         return remoteOriginUrl.match(HTTPS_REMOTE_REGEX)[2];
-    } else if(validGitRemoteOriginUrl(remoteOriginUrl)) {
+    } else if (validGitRemoteOriginUrl(remoteOriginUrl)) {
         return remoteOriginUrl.match(GIT_REMOTE_REGEX)[2];
     } else {
         return null;
