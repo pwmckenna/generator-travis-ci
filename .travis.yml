@@ -7,7 +7,5 @@ script:
     - grunt
 env:
     global:
-        # GH_USERNAME
         - secure: "nhstR2yGM7MrJdYxl9JemhQ5qg38dv4xIvIuaVWe9KqDpmGYWY1Y+npKpdGf\nbD2iaSomaboo6wFlAKoiN2hOvA1PMi4H4hEArbgOAkzUe5bG52k7yVGIgR2H\nRGcFelIf3OIdxRnp9EE4f3bjmRend/LOPbtH+xy3MPllqPvZ0lk="
-        # GH_PASSWORD
-        - secure: secure: "scJ6Z7jCKteX9ZwamlCcrD5U1oH58pfi4xDfXkowNaP4AmE3WYT9KZkLVQeC\nV1hKChyxWkgobb7k47ORmBYpqsEeFUTNpIJFjNcygPyUwV3KyT49diJBuZAE\nMKJtLXQHICefByrGnlr6b1rDz++KV0Ngz5ppXz5/v9CnDysyqZc="
+        - secure: "scJ6Z7jCKteX9ZwamlCcrD5U1oH58pfi4xDfXkowNaP4AmE3WYT9KZkLVQeC\nV1hKChyxWkgobb7k47ORmBYpqsEeFUTNpIJFjNcygPyUwV3KyT49diJBuZAE\nMKJtLXQHICefByrGnlr6b1rDz++KV0Ngz5ppXz5/v9CnDysyqZc="
