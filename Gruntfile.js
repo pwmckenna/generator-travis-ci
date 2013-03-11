@@ -12,7 +12,17 @@ module.exports = function (grunt) {
                 'app/**/*.js',
                 'gh-pages/**/*.js'
             ]
+        },
+        mochaTest: {
+            files: ['test/**/test.js']
+        },
+        mochaTestConfig: {
+            options: {
+                reporter: 'spec'
+            }
         }
     });
-    grunt.registerTask('default', 'jshint');
+
+    // Default task.
+    grunt.registerTask('default', ['jshint', 'mochaTest']);
 };
