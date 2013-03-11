@@ -31,8 +31,7 @@
         "request": "~2.14.0",
         "github": "~0.1.8",
         "open": "0.0.3",
-        "lodash": "~1.0.1",
-        "ursa": "~0.8.0"
+        "lodash": "~1.0.1"
     },
     "devDependencies": {
         "grunt": "0.4.0rc7",
