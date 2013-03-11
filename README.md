@@ -12,7 +12,7 @@ Travis is deeply integrated with github, and in order to set all the travis hook
 
 `git remote -v`
 > origin  git@github.com:pwmckenna/generator-travis-ci.git (fetch)  
-> origin	git@github.com:pwmckenna/generator-travis-ci.git (push)
+> origin  git@github.com:pwmckenna/generator-travis-ci.git (push)
 
 ## Sub-Generators:
 
