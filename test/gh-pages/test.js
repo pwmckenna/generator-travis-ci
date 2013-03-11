@@ -1,10 +1,14 @@
 /*global describe beforeEach it*/
 
 var path    = require('path');
-var helpers = require('yeoman-generator').test;
-var nconf = require('nconf');
-nconf.env().file({ file: '.env' });
+var generators = require('yeoman-generator');
+var helpers = generators.test;
+var q = require('q');
 
+var nconf = require('nconf');
+nconf.env().file({
+    file: '.env'
+});
 var username = nconf.get('GH_USERNAME');
 var password = nconf.get('GH_PASSWORD');
 
@@ -29,18 +33,21 @@ describe('travis-ci:gh-pages generator test', function () {
         this.timeout(15000);
 
         var generator;
-        generator = helpers.createGenerator('travis-ci:gh-pages', [
-            '../../../gh-pages', [
-                helpers.createDummyGenerator(),
-                'mocha:app'
-            ]
-        ]);
+        generator = helpers.createGenerator('travis-ci:gh-pages', ['../../../gh-pages']);
 
         helpers.mockPrompt(generator, {
             'username': username,
             'password': password
         });
 
+        generator.dependencies['git-config'].get = function(key) {
+            switch(key) {
+                case 'remote.origin.url':
+                    return q.resolve('git@github.com:pwmckenna/generator-travis-ci.git');
+                default:
+                    return q.reject();
+            }
+        };
         generator.run({}, function () {
             helpers.assertFiles(['.travis.yml']);
             done();
