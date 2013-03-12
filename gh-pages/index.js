@@ -30,15 +30,26 @@ module.exports = Generator;
 
 function Generator() {
     yeoman.generators.Base.apply(this, arguments);
+    this._attributes = {};
     this.appname = path.basename(process.cwd());
     this.desc('This generator creates a .travis.yml that tells travis-ci to build your yeoman project and push the build to your gh-pages branch, on every commit to master.');
 }
 
 util.inherits(Generator, yeoman.generators.Base);
 
-var that = {};
+Generator.prototype._get = function (key) {
+    return this._attributes[key];
+};
 
-Generator.prototype.displayLogo = function () {
+Generator.prototype._set = function (key, value) {
+    this._attributes[key] = value;
+};
+
+Generator.prototype._has = function (key) {
+    return this._attributes.hasOwnProperty(key);
+};
+
+Generator.prototype._displayLogo = function () {
     // Welcome message
     var logo = '\n' +
     '\n   ╔══════════════════════════════════╗'.red +
@@ -60,36 +71,44 @@ Generator.prototype.displayLogo = function () {
     '\n   ╚══════════════════════════════════╝'.red +
     '\n\n';
     console.log(logo);
+    return q.resolve();
 };
 
-Generator.prototype.initializeGitHubApi = function () {
-    that.github = new GitHubApi({
+Generator.prototype._initializeGitHubApi = function () {
+    this._set('github', new GitHubApi({
         // required
         version: '3.0.0',
-    });
+    }));
+    return q.resolve();
 };
 
-Generator.prototype.initializeTravisApi = function () {
-    that.travis = new TravisApi();
+Generator.prototype._initializeTravisApi = function () {
+    this._set('travis', new TravisApi());
+    return q.resolve();
 };
 
-Generator.prototype.repositoryInformation = function () {
-    gitConfig.get('remote.origin.url').then(function (remoteOriginUrl) {
-        that.owner = gitRemoteParser.getRepositoryOwner(remoteOriginUrl);
-        that.projectName = gitRemoteParser.getRepositoryName(remoteOriginUrl);
+Generator.prototype._repositoryInformation = function () {
+    return gitConfig.get('remote.origin.url').then(function (remoteOriginUrl) {
+        var owner = gitRemoteParser.getRepositoryOwner(remoteOriginUrl);
+        var project = gitRemoteParser.getRepositoryName(remoteOriginUrl);
 
-        assert(that.owner, 'Unable to determine user name from remote origin url');
-        assert(that.projectName, 'Unable to determine project name from remote origin url');
+        this._set('owner', owner);
+        this._set('projectName', project);
 
-        console.log(that.owner, that.projectName);
-    }).then(this.async());
+        assert(owner, 'Unable to determine user name from remote origin url');
+        assert(project, 'Unable to determine project name from remote origin url');
+
+        console.log('Owner'.bold, owner);
+        console.log('Project'.bold, project);
+        return q.resolve();
+    }.bind(this));
 };
 
-Generator.prototype.gitHubLogin = function () {
+Generator.prototype._gitHubLogin = function () {
     var prompts = [{
         name: 'username',
         message: 'GitHub Username',
-        default: that.owner
+        default: this._get('owner')
     }, {
         name: 'password',
         message: 'GitHub Password',
@@ -99,30 +118,29 @@ Generator.prototype.gitHubLogin = function () {
 
     var defer = q.defer();
     this.prompt(prompts, defer.makeNodeResolver());
-    defer.promise.then(function (props) {
-        that.github.authenticate({
+    return defer.promise.then(function (props) {
+        this._get('github').authenticate({
             type: 'basic',
             username: props.username,
             password: props.password
         });
         return q.resolve();
-    }).then(this.async());
+    }.bind(this));
 };
 
-Generator.prototype.gitHubUserInfo = function () {
+Generator.prototype._gitHubUserInfo = function () {
     var defer = q.defer();
-    that.github.user.get({}, defer.makeNodeResolver());
-    defer.promise.then(function (res) {
-        that.name = res.name;
-        that.email = res.email;
+    this._get('github').user.get({}, defer.makeNodeResolver());
+    return defer.promise.then(function (res) {
+        this._set('name', res.name);
+        this._set('email', res.email);
         return q.resolve();
-    }).then(this.async());
+    }.bind(this));
 };
 
-//single check for travis-ci app authorization
 Generator.prototype._checkIfTravisGitHubAppAuthorized = function () {
     var defer = q.defer();
-    that.github.authorization.getAll({}, defer.makeNodeResolver());
+    this._get('github').authorization.getAll({}, defer.makeNodeResolver());
     return defer.promise.then(function (res) {
         if (_.any(res, function (authorization) {
             return authorization.app.name === 'Travis' &&
@@ -152,56 +170,56 @@ Generator.prototype._waitUntilTravisAppAuthorized = function () {
         .fail(this._waitUntilTravisAppAuthorized.bind(this));
 };
 
-Generator.prototype.ensureTravisAppAuthorized = function () {
-    this._checkIfTravisGitHubAppAuthorized().fail(function () {
+Generator.prototype._ensureTravisAppAuthorized = function () {
+    return this._checkIfTravisGitHubAppAuthorized().fail(function () {
         this._showTravisAppAuthorizationSite();
         return this._waitUntilTravisAppAuthorized();
-    }.bind(this)).then(this.async());
+    }.bind(this));
 };
 
-Generator.prototype.generateGitHubOAuthToken = function () {
+Generator.prototype._generateGitHubOAuthToken = function () {
     var defer = q.defer();
-    that.github.authorization.create({
+    this._get('github').authorization.create({
         scopes: ['public_repo'],
-        note: 'Pushing ' + that.projectName + ' grunt builds to gh-pages using travis-ci',
+        note: 'Pushing ' + this._get('projectName') + ' grunt builds to gh-pages using travis-ci',
         note_url: 'http://travis-ci.org'
     }, defer.makeNodeResolver());
-    defer.promise.then(function (res) {
-        that.githubOAuthAuthorization = res;
+    return defer.promise.then(function (res) {
+        this._set('githubOAuthAuthorization', res);
         return q.resolve();
-    }).then(this.async());
+    }.bind(this));
 };
 
 Generator.prototype._revokeGitHubOAuthToken = function () {
     var defer = q.defer();
-    that.github.authorization.delete({
-        id: that.githubOAuthAuthorization.id
+    this._get('github').authorization.delete({
+        id: this._get('githubOAuthAuthorization').id
     }, defer.makeNodeResolver());
     return defer.promise;
 };
 
-Generator.prototype.travisGitHubAuthentication = function () {
-    that.travis.post('/auth/github', {
-        github_token: that.githubOAuthAuthorization.token
+Generator.prototype._travisGitHubAuthentication = function () {
+    return this._get('travis').post('/auth/github', {
+        github_token: this._get('githubOAuthAuthorization').token
     }).then(function (res) {
-        that.travisAccessToken = res.access_token;
-        that.travis.authorize(that.travisAccessToken);
+        this._set('travisAccessToken', res.access_token);
+        this._get('travis').authorize(this._get('travisAccessToken'));
         return q.resolve();
-    }).then(this.async());
+    }.bind(this));
 };
 
 Generator.prototype._getTravisHook = function () {
-    return that.travis.get('/hooks').then(function (res) {
+    return this._get('travis').get('/hooks').then(function (res) {
         var hooks = res.hooks;
         var hook = _.find(hooks, function (h) {
-            return h.name === that.projectName && h.owner_name === that.owner;
-        });
+            return h.name === this._get('projectName') && h.owner_name === this._get('owner');
+        }.bind(this));
         if (hook) {
             return q.resolve(hook);
         } else {
             return q.reject();
         }
-    });
+    }.bind(this));
 };
 
 Generator.prototype._setTravisHook = function (hook) {
@@ -211,17 +229,17 @@ Generator.prototype._setTravisHook = function (hook) {
     }
     //lets set the hook
     hook.active = true;
-    return that.travis.put('/hooks/' + hook.id, {
+    return this._get('travis').put('/hooks/' + hook.id, {
         hook: hook
     });
 };
 
-Generator.prototype.ensureTravisRepositoryHookSet = function () {
-    that.travis.post('/users/sync').then(function () {
+Generator.prototype._ensureTravisRepositoryHookSet = function () {
+    return this._get('travis').post('/users/sync').then(function () {
         return untilResolved(function () {
             return this._getTravisHook.call(this).then(this._setTravisHook.bind(this));
         }.bind(this), 3000);
-    }.bind(this)).then(this.async());
+    }.bind(this));
 };
 
 //var rsa = require('ursa');
@@ -236,14 +254,14 @@ Generator.prototype.ensureTravisRepositoryHookSet = function () {
     // });
 //};
 
-Generator.prototype.encryptGitHubOAuthToken = function () {
-    var msg = 'GH_OAUTH_TOKEN=' + that.githubOAuthAuthorization.token;
+Generator.prototype._encryptGitHubOAuthToken = function () {
+    var msg = 'GH_OAUTH_TOKEN=' + this._get('githubOAuthAuthorization').token;
     var defer = q.defer();
     request.get({
         url: 'http://travis-encrypt.herokuapp.com',
         qs: {
-            access_token: that.travisAccessToken,
-            repository: that.owner + '/' + that.projectName,
+            access_token: this._get('travisAccessToken'),
+            repository: this._get('owner') + '/' + this._get('projectName'),
             msg: msg
         }
     }, function (err, res, body) {
@@ -253,26 +271,66 @@ Generator.prototype.encryptGitHubOAuthToken = function () {
             defer.resolve(body);
         }
     });
-    defer.promise.then(function (body) {
-        that.secure = body;
+    return defer.promise.then(function (body) {
+        this._set('secure', body);
         return q.resolve();
-    }).then(this.async());
+    }.bind(this));
+};
+
+Generator.prototype._celebrate = function (message) {
+    this.log.ok(message);
+    return q.resolve();
 };
 
 Generator.prototype.writeDotTravisFile = function () {
-    assert(that.hasOwnProperty('secure'), 'encrypted oauth token unavailable');
-    assert(that.hasOwnProperty('owner'), 'owner not determined');
-    assert(that.hasOwnProperty('projectName'), 'project name not determined');
-    assert(that.hasOwnProperty('email'), 'user email unavailable');
-    assert(that.hasOwnProperty('name'), 'user\'s full name unavailable');
+    this._displayLogo()
 
-    this.directory('.', '.');
-    this.template('.travis.yml', '.travis.yml', {
-        oauth: that.githubOAuthAuthorization.token,
-        secure: that.secure,
-        owner: that.owner,
-        projectName: that.projectName,
-        email: that.email,
-        name: that.name
-    });
+        .then(this._initializeGitHubApi.bind(this))
+        .then(this._celebrate.bind(this, 'Initialize GitHub Api'))
+
+        .then(this._initializeTravisApi.bind(this))
+        .then(this._celebrate.bind(this, 'Initialize TravisCi Api'))
+
+        .then(this._repositoryInformation.bind(this))
+        .then(this._celebrate.bind(this, 'Gather Repository Information'))
+
+        .then(this._gitHubLogin.bind(this))
+        .then(this._celebrate.bind(this, 'Login to GitHub Api'))
+
+        .then(this._gitHubUserInfo.bind(this))
+        .then(this._celebrate.bind(this, 'Gather GitHub User Information'))
+
+        .then(this._ensureTravisAppAuthorized.bind(this))
+        .then(this._celebrate.bind(this, 'Ensure GitHub Travis App Authorized'))
+
+        .then(this._generateGitHubOAuthToken.bind(this))
+        .then(this._celebrate.bind(this, 'Generate GitHub OAuth Token'))
+
+        .then(this._travisGitHubAuthentication.bind(this))
+        .then(this._celebrate.bind(this, 'Login to Travis-Ci Api'))
+
+        .then(this._ensureTravisRepositoryHookSet.bind(this))
+        .then(this._celebrate.bind(this, 'Ensure Travis Repository Hook Set'))
+
+        .then(this._encryptGitHubOAuthToken.bind(this))
+        .then(this._celebrate.bind(this, 'Encrypt GitHub OAuth Token'))
+
+        .then(function () {
+            assert(this._has('secure'), 'encrypted oauth token unavailable');
+            assert(this._has('owner'), 'owner not determined');
+            assert(this._has('projectName'), 'project name not determined');
+            assert(this._has('email'), 'user email unavailable');
+            assert(this._has('name'), 'user\'s full name unavailable');
+
+            this.directory('.', '.');
+            this.template('.travis.yml', '.travis.yml', {
+                oauth: this._get('githubOAuthAuthorization').token,
+                secure: this._get('secure'),
+                owner: this._get('owner'),
+                projectName: this._get('projectName'),
+                email: this._get('email'),
+                name: this._get('name')
+            });
+        }.bind(this))
+        .then(this.async());
 };
