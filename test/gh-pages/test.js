@@ -55,12 +55,14 @@ describe('travis-ci:gh-pages generator test', function () {
         // `git config get remote.origin.url`,
         // as this will fail on travis boxes
         var TravisGhPagesGenerator = proxyquire('../../gh-pages/', {
-            './lib/git-config': {
-                'get': function (key) {
-                    assert(key === 'remote.origin.url', 'invalid git config get request');
-                    return q.resolve('git@github.com:pwmckenna/generator-travis-ci.git');
+            '../lib/travis-generator': proxyquire('../../lib/travis-generator', {
+                './git-config': {
+                    'get': function (key) {
+                        assert(key === 'remote.origin.url', 'invalid git config get request');
+                        return q.resolve('git@github.com:pwmckenna/generator-travis-ci.git');
+                    }
                 }
-            }
+            })
         });
 
         // We need to provide a few arguments that yo would generally provide to our generator.
