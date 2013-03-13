@@ -1,6 +1,6 @@
 {
     "name": "generator-travis-ci",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "Yeoman generator that sets up travis-ci to do automated deployment to gh-pages on every commit to master.",
     "repository": {
         "type": "git",
