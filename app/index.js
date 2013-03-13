@@ -38,8 +38,8 @@ Generator.prototype.writeDotTravisFile = function () {
         .then(this._ensureTravisRepositoryHookSet.bind(this))
         .then(this._celebrate.bind(this, 'Ensure Travis Repository Hook Set'), this._mourn.bind(this, 'Ensure Travis Repository Hook Set'))
 
-        // .then(this._revokeGitHubOAuthToken.bind(this))
-        // .then(this._celebrate.bind(this, 'Revoke GitHub OAuth Token'), this._mourn.bind(this, 'Revoke GitHub OAuth Token'))
+        .then(this._revokeGitHubOAuthToken.bind(this))
+        .then(this._celebrate.bind(this, 'Revoke GitHub OAuth Token'), this._mourn.bind(this, 'Revoke GitHub OAuth Token'))
 
         .then(function () {
             this.directory('.', '.');
