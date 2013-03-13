@@ -45,6 +45,5 @@ Generator.prototype.writeDotTravisFile = function () {
             this.directory('.', '.');
             this.template('.travis.yml', '.travis.yml', {});
         }.bind(this))
-        .fail(this._mourn.bind(this, 'Write Template'))
         .then(this.async());
 };
