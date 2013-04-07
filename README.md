@@ -8,6 +8,11 @@ This is a [yeoman](http://yeoman.io) [generator](https://github.com/yeoman/gener
 
 ## Requirements
 
+####Yeoman
+
+Version 1.0 and greater (`yo` rather than `yeoman`)
+
+####GitHub
 Travis is deeply integrated with github, and in order to set all the travis hooks for you, this generator must be run on project hosted on github. Your git remotes should looks something like this:
 
 `git remote -v`
@@ -16,7 +21,7 @@ Travis is deeply integrated with github, and in order to set all the travis hook
 
 ## Sub-Generators:
 
-### default generator
+#### default generator
 
 > Sets up travis-ci.org to track your project and creates a basic .travis.yml that runs `grunt` on each commit. 
 
@@ -26,7 +31,7 @@ Travis is deeply integrated with github, and in order to set all the travis hook
 
 Usage: `yo travis-ci`
 
-### gh-pages generator
+#### gh-pages generator
 
 > Aims to make yeoman sites work similar to jekyll sites on github pages. Commit the raw files into master and what is served via gh-pages is `grunt build` output.
 
@@ -34,7 +39,7 @@ Usage: `yo travis-ci`
 
 Usage: `yo travis-ci:gh-pages`
 
-### suggestions?
+#### suggestions?
 
 If you have suggestions for common yeoman/grunt testing/deployment tasks that could be handled best by a continuous integration service, make a pull request or shoot me a message!
 
