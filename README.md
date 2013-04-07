@@ -11,7 +11,7 @@ __`npm install generator-travis-ci`__
 
 ####Yeoman
 
-Version 1.0 and greater (`yo` rather than `yeoman`)
+Version 1.0 and greater (__`yo`__ rather than __`yeoman`__)
 
 ####GitHub
 Travis is deeply integrated with github, and in order to set all the travis hooks for you, this generator must be run on project hosted on github. Your git remotes should looks something like this:
