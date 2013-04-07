@@ -1,11 +1,11 @@
 # *generator-travis-ci*
 
-This is a [yeoman](http://yeoman.io) [generator](https://github.com/yeoman/generator) that provides travis-ci setup options for yeoman projects.  
-Provides an automated alternative to https://github.com/yeoman/yeoman/wiki/Deployment.
+[Yeoman](http://yeoman.io) [generator](https://github.com/yeoman/generator) that provides travis-ci setup options for yeoman projects.  
+__`yo travis-ci:gh-pages`__ is an automated alternative to https://github.com/yeoman/yeoman/wiki/Deployment.
 
 ## Installation
 
-`npm install generator-travis-ci`
+__`npm install generator-travis-ci`__
 
 ## Requirements
 
@@ -16,7 +16,7 @@ Version 1.0 and greater (`yo` rather than `yeoman`)
 ####GitHub
 Travis is deeply integrated with github, and in order to set all the travis hooks for you, this generator must be run on project hosted on github. Your git remotes should looks something like this:
 
-`git remote -v`
+__`git remote -v`__
 > origin  git@github.com:pwmckenna/generator-travis-ci.git (fetch)  
 > origin  git@github.com:pwmckenna/generator-travis-ci.git (push)
 
@@ -30,7 +30,7 @@ Travis is deeply integrated with github, and in order to set all the travis hook
 
 > [![Build Status](https://travis-ci.org/pwmckenna/generator-travis-ci.png?branch=master)](https://travis-ci.org/pwmckenna/generator-travis-ci)
 
-Usage: `yo travis-ci`
+Usage: __`yo travis-ci`__
 
 #### gh-pages generator
 
@@ -38,7 +38,7 @@ Usage: `yo travis-ci`
 
 > Creates a *.travis.yml* file that tells travis-ci to build the yeoman project in your master branch after every commit and push the built site into your project's *gh-pages* branch.
 
-Usage: `yo travis-ci:gh-pages`
+Usage: __`yo travis-ci:gh-pages`__
 
 #### suggestions?
 
