@@ -1,6 +1,7 @@
 # *generator-travis-ci*
 
-This is a [yeoman](http://yeoman.io) [generator](https://github.com/yeoman/generator) that provides travis-ci setup options for yeoman projects.
+This is a [yeoman](http://yeoman.io) [generator](https://github.com/yeoman/generator) that provides travis-ci setup options for yeoman projects.  
+Provides an automated alternative to https://github.com/yeoman/yeoman/wiki/Deployment.
 
 ## Installation
 
