@@ -3,10 +3,8 @@
 var path    = require('path');
 var generators = require('yeoman-generator');
 var helpers = generators.test;
-var q = require('q');
 var proxyquire = require('proxyquire');
 var assert = require('assert');
-
 
 // We need to be able to specify username and password in a ignored .env file locally,
 // but on travis, we need to load
@@ -54,14 +52,18 @@ describe('travis-ci:gh-pages generator test', function () {
         // In this case, we're stubbing out the local
         // `git config get remote.origin.url`,
         // as this will fail on travis boxes
+        var Repo = function () {};
+        Repo.prototype.remotes = function (callback) {
+            callback(null, [
+                {
+                    name: 'origin',
+                    url: 'git@github.com:pwmckenna/generator-travis-ci.git'
+                }
+            ]);
+        };
         var TravisGhPagesGenerator = proxyquire('../../gh-pages/', {
             '../lib/travis-generator': proxyquire('../../lib/travis-generator', {
-                './git-config': {
-                    'get': function (key) {
-                        assert(key === 'remote.origin.url', 'invalid git config get request');
-                        return q.resolve('git@github.com:pwmckenna/generator-travis-ci.git');
-                    }
-                }
+                'git-tools': Repo
             })
         });
 
