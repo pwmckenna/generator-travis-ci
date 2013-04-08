@@ -1,49 +1,50 @@
 {
-    "name": "generator-travis-ci",
-    "version": "0.3.1",
-    "description": "Yeoman generator that sets up travis-ci to do automated deployment to gh-pages on every commit to master.",
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/pwmckenna/generator-travis-ci.git"
-    },
-    "scripts": {
-        "test": "mocha --reporter spec"
-    },
-    "keywords": [
-        "yeoman-generator",
-        "yeoman",
-        "generator",
-        "travis-ci",
-        "travis",
-        "github",
-        "gh-pages"
-    ],
-    "author": "Patrick Williams <pwmckenna@gmail.com>",
-    "license": "BSD",
-    "readmeFilename": "README.md",
-    "main": "",
-    "bin": "",
-    "homepage": "https://github.com/pwmckenna/generator-travis-ci",
-    "bugs": "https://github.com/pwmckenna/generator-travis-ci/issues",
-    "dependencies": {
-        "yeoman-generator": "~0.10.0",
-        "q": "~0.8.12",
-        "request": "~2.14.0",
-        "github": "~0.1.8",
-        "open": "0.0.3",
-        "lodash": "~1.0.1",
-        "ursa": "~0.8.0"
-    },
-    "devDependencies": {
-        "grunt": "0.4.0rc7",
-        "grunt-contrib-jshint": "0.1.1rc6",
-        "grunt-mocha-test": "0.2.0",
-        "matchdep": "~0.1.1",
-        "mocha": "~1.8.1",
-        "nconf": "~0.6.7",
-        "proxyquire": "~0.4.0"
-    },
-    "engines": {
-        "node": ">=0.8.0"
-    }
+  "name": "generator-travis-ci",
+  "version": "0.3.1",
+  "description": "Yeoman generator that sets up travis-ci to do automated deployment to gh-pages on every commit to master.",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pwmckenna/generator-travis-ci.git"
+  },
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "keywords": [
+    "yeoman-generator",
+    "yeoman",
+    "generator",
+    "travis-ci",
+    "travis",
+    "github",
+    "gh-pages"
+  ],
+  "author": "Patrick Williams <pwmckenna@gmail.com>",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "main": "",
+  "bin": "",
+  "homepage": "https://github.com/pwmckenna/generator-travis-ci",
+  "bugs": "https://github.com/pwmckenna/generator-travis-ci/issues",
+  "dependencies": {
+    "yeoman-generator": "~0.10.0",
+    "q": "~0.8.12",
+    "request": "~2.14.0",
+    "github": "~0.1.8",
+    "open": "0.0.3",
+    "lodash": "~1.0.1",
+    "ursa": "~0.8.0",
+    "git-tools": "0.0.3"
+  },
+  "devDependencies": {
+    "grunt": "0.4.0rc7",
+    "grunt-contrib-jshint": "0.1.1rc6",
+    "grunt-mocha-test": "0.2.0",
+    "matchdep": "~0.1.1",
+    "mocha": "~1.8.1",
+    "nconf": "~0.6.7",
+    "proxyquire": "~0.4.0"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  }
 }
