@@ -13,33 +13,33 @@ function Generator() {
 util.inherits(Generator, TravisGenerator);
 
 Generator.prototype.writeDotTravisFile = function () {
-    this._displayLogo()
-        .then(this._initializeGitHubApi.bind(this))
-        .then(this._celebrate.bind(this, 'Initialize GitHub Api'), this._mourn.bind(this, 'Initialize GitHub Api'))
+    this.displayLogo()
+        .then(this.initializeGitHubApi.bind(this))
+        .then(this.celebrate.bind(this, 'Initialize GitHub Api'), this.mourn.bind(this, 'Initialize GitHub Api'))
 
-        .then(this._initializeTravisApi.bind(this))
-        .then(this._celebrate.bind(this, 'Initialize Travis-ci Api'), this._mourn.bind(this, 'Initialize Travis-ci Api'))
+        .then(this.initializeTravisApi.bind(this))
+        .then(this.celebrate.bind(this, 'Initialize Travis-ci Api'), this.mourn.bind(this, 'Initialize Travis-ci Api'))
 
-        .then(this._repositoryInformation.bind(this))
-        .then(this._celebrate.bind(this, 'Query Repository Information'), this._mourn.bind(this, 'Query Repository Information'))
+        .then(this.repositoryInformation.bind(this))
+        .then(this.celebrate.bind(this, 'Query Repository Information'), this.mourn.bind(this, 'Query Repository Information'))
 
-        .then(this._gitHubLogin.bind(this))
-        .then(this._celebrate.bind(this, 'Login to GitHub Api'), this._mourn.bind(this, 'Login to GitHub Api'))
+        .then(this.gitHubLogin.bind(this))
+        .then(this.celebrate.bind(this, 'Login to GitHub Api'), this.mourn.bind(this, 'Login to GitHub Api'))
 
-        .then(this._ensureTravisAppAuthorized.bind(this))
-        .then(this._celebrate.bind(this, 'Ensure GitHub Travis App Authorized'), this._mourn.bind(this, 'Ensure GitHub Travis App Authorized'))
+        .then(this.ensureTravisAppAuthorized.bind(this))
+        .then(this.celebrate.bind(this, 'Ensure GitHub Travis App Authorized'), this.mourn.bind(this, 'Ensure GitHub Travis App Authorized'))
 
-        .then(this._generateGitHubOAuthToken.bind(this))
-        .then(this._celebrate.bind(this, 'Generate GitHub OAuth Token'), this._mourn.bind(this, 'Generate GitHub OAuth Token'))
+        .then(this.generateGitHubOAuthToken.bind(this))
+        .then(this.celebrate.bind(this, 'Generate GitHub OAuth Token'), this.mourn.bind(this, 'Generate GitHub OAuth Token'))
 
-        .then(this._travisGitHubAuthentication.bind(this))
-        .then(this._celebrate.bind(this, 'Login to Travis-ci Api'), this._mourn.bind(this, 'Login to Travis-ci Api'))
+        .then(this.travisGitHubAuthentication.bind(this))
+        .then(this.celebrate.bind(this, 'Login to Travis-ci Api'), this.mourn.bind(this, 'Login to Travis-ci Api'))
 
-        .then(this._ensureTravisRepositoryHookSet.bind(this))
-        .then(this._celebrate.bind(this, 'Ensure Travis Repository Hook Set'), this._mourn.bind(this, 'Ensure Travis Repository Hook Set'))
+        .then(this.ensureTravisRepositoryHookSet.bind(this))
+        .then(this.celebrate.bind(this, 'Ensure Travis Repository Hook Set'), this.mourn.bind(this, 'Ensure Travis Repository Hook Set'))
 
-        .then(this._revokeGitHubOAuthToken.bind(this))
-        .then(this._celebrate.bind(this, 'Revoke GitHub OAuth Token'), this._mourn.bind(this, 'Revoke GitHub OAuth Token'))
+        .then(this.revokeGitHubOAuthToken.bind(this))
+        .then(this.celebrate.bind(this, 'Revoke GitHub OAuth Token'), this.mourn.bind(this, 'Revoke GitHub OAuth Token'))
 
         .then(function () {
             this.directory('.', '.');
