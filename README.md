@@ -1,11 +1,11 @@
 # *generator-travis-ci*
 
-[Yeoman](http://yeoman.io) [generator](https://github.com/yeoman/generator) that provides travis-ci setup options for yeoman projects.  
+[Yeoman](http://yeoman.io) [generator](https://github.com/yeoman/generator) that provides travis-ci setup options for yeoman projects.
 __`yo travis-ci:gh-pages`__ is an automated alternative to https://github.com/yeoman/yeoman/wiki/Deployment.
 
 ## Installation
 
-__`npm install generator-travis-ci`__
+__`npm install -g generator-travis-ci`__
 
 ## Requirements
 
@@ -17,16 +17,16 @@ Beta version 1.0 and hopefully all future versions.
 Travis is deeply integrated with github, and in order to set all the travis hooks for you, this generator must be run on project hosted on github. Your git remotes should looks something like this:
 
 __`git remote -v`__
-> origin  git@github.com:pwmckenna/generator-travis-ci.git (fetch)  
+> origin  git@github.com:pwmckenna/generator-travis-ci.git (fetch)
 > origin  git@github.com:pwmckenna/generator-travis-ci.git (push)
 
 ## Sub-Generators:
 
 #### default generator
 
-> Sets up travis-ci.org to track your project and creates a basic .travis.yml that runs `grunt` on each commit. 
+> Sets up travis-ci.org to track your project and creates a basic .travis.yml that runs `grunt` on each commit.
 
-> You can then display your projects build/test status in your README or elsewhere like below: 
+> You can then display your projects build/test status in your README or elsewhere like below:
 
 > [![Build Status](https://travis-ci.org/pwmckenna/generator-travis-ci.png?branch=master)](https://travis-ci.org/pwmckenna/generator-travis-ci)
 
