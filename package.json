@@ -26,7 +26,7 @@
   "homepage": "https://github.com/pwmckenna/generator-travis-ci",
   "bugs": "https://github.com/pwmckenna/generator-travis-ci/issues",
   "dependencies": {
-    "yeoman-generator": "~0.10.0",
+    "yeoman-generator": "~0.10.5",
     "q": "~0.8.12",
     "request": "~2.14.0",
     "github": "~0.1.8",

@@ -11,6 +11,7 @@ module.exports = function (grunt) {
                 'Gruntfile.js',
                 'app/**/*.js',
                 'gh-pages/**/*.js',
+                'lib/**/*.js',
                 'test/**/*.js'
             ]
         },

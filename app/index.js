@@ -39,6 +39,9 @@ Generator.prototype.writeDotTravisFile = function () {
         .then(this.ensureTravisRepositoryHookSet.bind(this))
         .then(this.celebrate.bind(this, 'Ensure Travis Repository Hook Set'), this.mourn.bind(this, 'Ensure Travis Repository Hook Set'))
 
+        .then(this.insertReadmeStatusImage.bind(this))
+        .then(this.celebrate.bind(this, 'Readme Build Status Image'), this.mourn.bind(this, 'Readme Build Status Image'))
+
         .then(this.revokeGitHubOAuthToken.bind(this))
         .then(this.celebrate.bind(this, 'Revoke GitHub OAuth Token'), this.mourn.bind(this, 'Revoke GitHub OAuth Token'))
 

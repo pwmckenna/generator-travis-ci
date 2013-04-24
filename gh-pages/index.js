@@ -2,6 +2,7 @@ var assert = require('assert');
 var TravisGenerator = require('../lib/travis-generator');
 var path = require('path');
 var util = require('util');
+var q = require('q');
 
 module.exports = Generator;
 
@@ -44,25 +45,37 @@ Generator.prototype.writeDotTravisFile = function () {
         .then(this.ensureTravisRepositoryHookSet.bind(this))
         .then(this.celebrate.bind(this, 'Ensure Travis Repository Hook Set'), this.mourn.bind(this, 'Ensure Travis Repository Hook Set'))
 
+        .then(this.insertReadmeStatusImage.bind(this))
+        .then(this.celebrate.bind(this, 'Readme Build Status Image'), this.mourn.bind(this, 'Readme Build Status Image'))
+
         .then(this.encryptGitHubOAuthToken.bind(this))
         .then(this.celebrate.bind(this, 'Encrypt GitHub OAuth Token'), this.mourn.bind(this, 'Encrypt GitHub OAuth Token'))
 
         .then(function () {
-            assert(this.has('secure'), 'encrypted oauth token unavailable');
-            assert(this.has('owner'), 'owner not determined');
-            assert(this.has('projectName'), 'project name not determined');
-            assert(this.has('email'), 'user email unavailable');
-            assert(this.has('name'), 'user\'s full name unavailable');
+            try {
+                assert(this.has('secure'), 'encrypted oauth token unavailable');
+                assert(this.has('owner'), 'owner not determined');
+                assert(this.has('projectName'), 'project name not determined');
+                assert(this.has('email'), 'user email unavailable');
+                assert(this.has('name'), 'user\'s full name unavailable');
 
-            this.directory('.', '.');
-            this.template('.travis.yml', '.travis.yml', {
-                oauth: this.get('githubOAuthAuthorization').token,
-                secure: this.get('secure'),
-                owner: this.get('owner'),
-                projectName: this.get('projectName'),
-                email: this.get('email'),
-                name: this.get('name')
-            });
+                this.directory('.', '.');
+                this.template('.travis.yml', '.travis.yml', {
+                    oauth: this.get('githubOAuthAuthorization').token,
+                    secure: this.get('secure'),
+                    owner: this.get('owner'),
+                    projectName: this.get('projectName'),
+                    email: this.get('email'),
+                    name: this.get('name')
+                });
+                return q.resolve();
+            } catch (err) {
+                return q.reject(err);
+            }
+        }.bind(this))
+        .then(this.celebrate.bind(this, 'Write Travis Configuration File'), this.mourn.bind(this, 'Write Travis Configuration File'))
+
+        .then(function () {
             done();
         }.bind(this), function (err) {
             done(err);
