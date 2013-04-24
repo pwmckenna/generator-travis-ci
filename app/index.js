@@ -13,6 +13,7 @@ function Generator() {
 util.inherits(Generator, TravisGenerator);
 
 Generator.prototype.writeDotTravisFile = function () {
+    var done = this.async();
     this.displayLogo()
         .then(this.initializeGitHubApi.bind(this))
         .then(this.celebrate.bind(this, 'Initialize GitHub Api'), this.mourn.bind(this, 'Initialize GitHub Api'))
@@ -44,6 +45,8 @@ Generator.prototype.writeDotTravisFile = function () {
         .then(function () {
             this.directory('.', '.');
             this.template('.travis.yml', '.travis.yml', {});
-        }.bind(this))
-        .then(this.async());
+            done();
+        }.bind(this), function (err) {
+            done(err);
+        });
 };

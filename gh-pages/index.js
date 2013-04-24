@@ -14,6 +14,7 @@ function Generator() {
 util.inherits(Generator, TravisGenerator);
 
 Generator.prototype.writeDotTravisFile = function () {
+    var done = this.async();
     this.displayLogo()
 
         .then(this.initializeGitHubApi.bind(this))
@@ -62,6 +63,8 @@ Generator.prototype.writeDotTravisFile = function () {
                 email: this.get('email'),
                 name: this.get('name')
             });
-        }.bind(this))
-        .then(this.async());
+            done();
+        }.bind(this), function (err) {
+            done(err);
+        });
 };
