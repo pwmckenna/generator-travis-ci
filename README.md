@@ -1,4 +1,4 @@
-# *generator-travis-ci*
+# generator-travis-ci
 
 [Yeoman](http://yeoman.io) [generator](https://github.com/yeoman/generator) that provides travis-ci setup options for yeoman projects.
 __`yo travis-ci:gh-pages`__ is an automated alternative to https://github.com/yeoman/yeoman/wiki/Deployment.
