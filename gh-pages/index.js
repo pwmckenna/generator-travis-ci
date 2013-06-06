@@ -27,6 +27,12 @@ Generator.prototype.writeDotTravisFile = function () {
         .then(this.repositoryInformation.bind(this))
         .then(this.celebrate.bind(this, 'Query Repository Information'), this.mourn.bind(this, 'Query Repository Information'))
 
+        .then(this.setSourceBranch.bind(this))
+        .then(this.celebrate.bind(this, 'Set Source Branch'), this.mourn.bind(this, 'Set Source Branch'))
+
+        .then(this.setDestinationBranch.bind(this))
+        .then(this.celebrate.bind(this, 'Set Destination Branch'), this.mourn.bind(this, 'Set Destination Branch'))
+
         .then(this.gitHubLogin.bind(this))
         .then(this.celebrate.bind(this, 'Login to GitHub Api'), this.mourn.bind(this, 'Login to GitHub Api'))
 
@@ -61,6 +67,8 @@ Generator.prototype.writeDotTravisFile = function () {
 
                 this.directory('.', '.');
                 this.template('.travis.yml', '.travis.yml', {
+                    sourceBranch: this.get('sourceBranch'),
+                    destinationBranch: this.get('destinationBranch'),
                     oauth: this.get('githubOAuthAuthorization').token,
                     secure: this.get('secure'),
                     owner: this.get('owner'),

@@ -10,13 +10,13 @@ notifications:
     irc: "irc.freenode.org#generator-travis-ci"
 branches:
     only:
-        - master
+        - <%= sourceBranch %>
 env:
     global:
         # GH_OAUTH_TOKEN is the oauth token generated as described at
         # https://help.github.com/articles/creating-an-oauth-token-for-command-line-use
         #
-        # curl -u 'username' -d '{"scopes":["repo"],"note":"push to gh-pages from travis"}' https://api.github.com/authorizations
+        # curl -u 'username' -d '{"scopes":["repo"],"note":"push to <%= destinationBranch %> from travis"}' https://api.github.com/authorizations
         #
         # It must be encrypted using the travis gem
         # http://about.travis-ci.org/docs/user/build-configuration/#Secure-environment-variables
@@ -27,8 +27,8 @@ env:
         - secure: <%= secure %>
         - GH_OWNER: <%= owner %>
         - GH_PROJECT_NAME: <%= projectName %>
-        # This .travis.yml file instructs travis-ci.org to build your master branch using `yeoman build`
-        # and deploy the output to your project's gh-pages branch.
+        # This .travis.yml file instructs travis-ci.org to build your <%= sourceBranch %> branch using `yeoman build`
+        # and deploy the output to your project's <%= destinationBranch %> branch.
 
 before_script:
     # install dependencies
@@ -41,15 +41,15 @@ script:
     - grunt
 after_success:
     # Any command that using GH_OAUTH_TOKEN must pipe the output to /dev/null to not expose your oauth token
-    - git submodule add -b gh-pages https://<%="${GH_OAUTH_TOKEN}"%>@github.com/<%="${GH_OWNER}"%>/<%="${GH_PROJECT_NAME}"%> site > /dev/null 2>&1
+    - git submodule add -b <%= destinationBranch %> https://<%="${GH_OAUTH_TOKEN}"%>@github.com/<%="${GH_OWNER}"%>/<%="${GH_PROJECT_NAME}"%> site > /dev/null 2>&1
     - cd site
-    - if git checkout gh-pages; then git checkout -b gh-pages; fi
+    - if git checkout <%= destinationBranch %>; then git checkout -b <%= destinationBranch %>; fi
     - git rm -r .
     - cp -R ../dist/* .
     - cp ../dist/.* .
     - git add -f .
     - git config user.email "<%= email %>"
     - git config user.name "<%= name %>"
-    - git commit -am "adding the yeoman build files to gh-pages"
+    - git commit -am "adding the yeoman build files to <%= destinationBranch %>"
     # Any command that using GH_OAUTH_TOKEN must pipe the output to /dev/null to not expose your oauth token
-    - git push https://<%="${GH_OAUTH_TOKEN}"%>@github.com/<%="${GH_OWNER}"%>/<%="${GH_PROJECT_NAME}"%> HEAD:gh-pages > /dev/null 2>&1
+    - git push https://<%="${GH_OAUTH_TOKEN}"%>@github.com/<%="${GH_OWNER}"%>/<%="${GH_PROJECT_NAME}"%> HEAD:<%= destinationBranch %> > /dev/null 2>&1
