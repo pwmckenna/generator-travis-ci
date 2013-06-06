@@ -34,7 +34,7 @@ Usage: __`yo travis-ci`__
 
 #### gh-pages generator
 
-> Aims to make yeoman sites work similar to jekyll sites on github pages. Commit the raw files into master and what is served via gh-pages is `grunt build` output.
+> Aims to make yeoman sites work similar to jekyll sites on github pages. Commit the raw files into master and what is served via gh-pages is `grunt build` output. For [user & organization pages](https://help.github.com/articles/user-organization-and-project-pages#user--organization-pages), you specify the branch you'd like to develop in, and the output is pushed to master.
 
 > Creates a *.travis.yml* file that tells travis-ci to build the yeoman project in your master branch after every commit and push the built site into your project's *gh-pages* branch.
 
