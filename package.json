@@ -1,6 +1,6 @@
 {
   "name": "generator-travis-ci",
-  "version": "0.6.0",
+  "version": "0.6.2",
   "description": "Yeoman generator that sets up travis-ci to do automated github pages deployment on every commit.",
   "repository": {
     "type": "git",
@@ -33,7 +33,8 @@
     "open": "0.0.3",
     "lodash": "~1.0.1",
     "ursa": "~0.8.0",
-    "git-tools": "0.0.3"
+    "git-tools": "0.0.3",
+    "travis-ci": "~0.1.2"
   },
   "devDependencies": {
     "grunt": "0.4.0rc7",
