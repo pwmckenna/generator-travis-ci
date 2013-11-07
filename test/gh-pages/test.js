@@ -77,7 +77,9 @@ describe('travis-ci:gh-pages generator test', function () {
         // rather than providing them via stdin.
         helpers.mockPrompt(generator, {
             'username': username,
-            'password': password
+            'password': password,
+            'icon': 'n',
+            'overwrite': 'n'
         });
         generator.run({}, function () {
             // For now, just check that the file exists.
@@ -87,7 +89,7 @@ describe('travis-ci:gh-pages generator test', function () {
             });
         });
     });
-    it.skip('creates expected .travis.yml file for a *.github.com user page', function (done) {
+    it('creates expected .travis.yml file for a *.github.com user page', function (done) {
         this.timeout(15000);
 
         // We already know the path of our generator package,
@@ -123,7 +125,9 @@ describe('travis-ci:gh-pages generator test', function () {
         // rather than providing them via stdin.
         helpers.mockPrompt(generator, {
             'username': username,
-            'password': password
+            'password': password,
+            'icon': 'n',
+            'overwrite': 'n'
         });
         generator.run({}, function () {
             // For now, just check that the file exists.
@@ -133,7 +137,7 @@ describe('travis-ci:gh-pages generator test', function () {
             });
         });
     });
-    it.skip('creates expected .travis.yml file for a *.github.io user page', function (done) {
+    it('creates expected .travis.yml file for a *.github.io user page', function (done) {
         this.timeout(15000);
 
         // We already know the path of our generator package,
@@ -169,7 +173,9 @@ describe('travis-ci:gh-pages generator test', function () {
         // rather than providing them via stdin.
         helpers.mockPrompt(generator, {
             'username': username,
-            'password': password
+            'password': password,
+            'icon': 'n',
+            'overwrite': 'n'
         });
         generator.run({}, function () {
             // For now, just check that the file exists.

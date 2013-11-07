@@ -79,11 +79,14 @@ describe('travis-ci generator test', function () {
         // rather than providing them via stdin.
         helpers.mockPrompt(generator, {
             'username': username,
-            'password': password
+            'password': password,
+            'icon': 'n',
+            'overwrite': 'n'
         });
         generator.run({}, function () {
             // For now, just check that the file exists.
             helpers.assertFiles(['.travis.yml']);
+            console.log('we have asserted', new Error().stack);
             done();
         });
     });
