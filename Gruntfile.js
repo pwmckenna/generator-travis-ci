@@ -8,26 +8,22 @@ module.exports = function (grunt) {
                 jshintrc: '.jshintrc'
             },
             all: [
-                'Gruntfile.js',
-                'app/**/*.js',
-                'gh-pages/**/*.js',
-                'lib/**/*.js',
-                'test/**/*.js'
+                '**/*.js',
+                '!node_modules/**/*.js'
             ]
         },
         mochaTest: {
             files: [
-                'test/app/test.js',
-                'test/gh-pages/test.js'
+                'test/**/*.js'
             ]
         },
-        mochaTestConfig: {
-            options: {
-                reporter: 'spec'
+        env: {
+            test: {
+                src: '.env'
             }
         }
     });
 
-    // Default task.
-    grunt.registerTask('default', ['jshint', 'mochaTest']);
+    grunt.registerTask('travis', ['jshint', 'mochaTest']);
+    grunt.registerTask('test', ['jshint', 'env:test', 'mochaTest']);
 };

@@ -7,7 +7,7 @@
     "url": "git://github.com/pwmckenna/generator-travis-ci.git"
   },
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "./node_modules/grunt-cli/bin/grunt"
   },
   "keywords": [
     "yeoman-generator",
@@ -29,7 +29,7 @@
     "yeoman-generator": "~0.13.4",
     "q": "~0.8.12",
     "request": "~2.14.0",
-    "github": "~0.1.8",
+    "github": "~0.1.12",
     "open": "0.0.3",
     "lodash": "~1.0.1",
     "ursa": "~0.8.0",
@@ -38,19 +38,18 @@
     "chalk": "~0.3.0"
   },
   "devDependencies": {
-    "grunt": "0.4.0rc7",
-    "grunt-contrib-jshint": "0.1.1rc6",
-    "grunt-mocha-test": "0.2.0",
-    "matchdep": "~0.1.1",
-    "mocha": "~1.8.1",
-    "nconf": "~0.6.7",
-    "proxyquire": "~0.4.0"
+    "grunt": "~0.4.2",
+    "grunt-cli": "~0.1.11",
+    "grunt-env": "~0.4.0",
+    "grunt-contrib-jshint": "~0.7.2",
+    "grunt-mocha-test": "~0.7.0",
+    "mocha": "~1.14.0",
+    "matchdep": "~0.3.0"
   },
   "peerDependencies": {
     "yo": ">=1.0.0-rc.1.1"
   },
   "engines": {
     "node": ">=0.8.0"
-  },
-  "preferGlobal": true
+  }
 }

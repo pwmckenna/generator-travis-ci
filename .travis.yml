@@ -2,9 +2,8 @@ language: node_js
 node_js:
     - 0.8
 before_script:
-    - npm install -g grunt-cli
 script:
-    - grunt
+    - ./node_modules/grunt-cli/bin/grunt travis
 env:
     global:
         - secure: "nhstR2yGM7MrJdYxl9JemhQ5qg38dv4xIvIuaVWe9KqDpmGYWY1Y+npKpdGf\nbD2iaSomaboo6wFlAKoiN2hOvA1PMi4H4hEArbgOAkzUe5bG52k7yVGIgR2H\nRGcFelIf3OIdxRnp9EE4f3bjmRend/LOPbtH+xy3MPllqPvZ0lk="
