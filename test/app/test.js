@@ -20,7 +20,7 @@ describe('travis-ci generator test', function () {
             helpers.mockPrompt(this.generator, {
                 'username': process.env.GH_USERNAME,
                 'password': process.env.GH_PASSWORD,
-                'icon': 'n'
+                'icon': 'Y'
             });
 
             done();
@@ -38,7 +38,6 @@ describe('travis-ci generator test', function () {
         }.bind(this));
 
         this.generator.run({}, function () {
-            console.log('RUN COMPLETE');
             helpers.assertFiles(['.travis.yml']);
             done();
         });

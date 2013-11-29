@@ -20,7 +20,8 @@ describe('travis-ci:gh-pages generator test', function () {
             helpers.mockPrompt(this.generator, {
                 'username': process.env.GH_USERNAME,
                 'password': process.env.GH_PASSWORD,
-                'icon': 'n'
+                'icon': 'Y',
+                'destination': 'development'
             });
 
             done();
@@ -50,12 +51,12 @@ describe('travis-ci:gh-pages generator test', function () {
         }.bind(this));
     });
 
-    it('creates expected .travis.yml file for a *.github.com user page', function (done) {
+    it('creates expected .travis.yml file for a *.github.io user page', function (done) {
         this.timeout(15000);
 
         helpers.stub(this.generator, 'repositoryInformation', function () {
             this.generator.set('owner', 'pwmckenna');
-            this.generator.set('projectName', 'pwmckenna.github.com');
+            this.generator.set('projectName', 'pwmckenna.github.io');
         }.bind(this));
 
         this.generator.run({}, function () {
