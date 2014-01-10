@@ -47,7 +47,7 @@ Generator.prototype.writeDotTravisFile = function () {
 
         .then(function () {
             this.directory('.', '.');
-            this.template('_.travis.yml', '.travis.yml', {});
+            this.template('.travis.yml', '.travis.yml', {});
             done();
         }.bind(this), function (err) {
             done(new Error(err));

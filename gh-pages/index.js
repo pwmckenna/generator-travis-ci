@@ -66,7 +66,7 @@ Generator.prototype.writeDotTravisFile = function () {
                 assert(this.has('name'), 'user\'s full name unavailable');
 
                 this.directory('.', '.');
-                this.template('_.travis.yml', '.travis.yml', {
+                this.template('.travis.yml', '.travis.yml', {
                     sourceBranch: this.get('sourceBranch'),
                     destinationBranch: this.get('destinationBranch'),
                     oauth: this.get('githubOAuthAuthorization').token,
