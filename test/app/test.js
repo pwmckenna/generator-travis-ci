@@ -1,6 +1,7 @@
 var path    = require('path');
 var generators = require('yeoman-generator');
 var helpers = generators.test;
+var _ = require('lodash');
 
 var cwd = path.join(__dirname, 'temp');
 
@@ -37,9 +38,9 @@ describe('travis-ci generator test', function () {
             this.generator.set('projectName', 'generator-travis-ci');
         }.bind(this));
 
-        this.generator.run({}, function () {
+        this.generator.run({}, _.once(function () {
             helpers.assertFiles(['.travis.yml']);
             done();
-        });
+        }));
     });
 });
