@@ -7,7 +7,7 @@
     "url": "git://github.com/pwmckenna/generator-travis-ci.git"
   },
   "scripts": {
-    "test": "./node_modules/grunt-cli/bin/grunt"
+    "test": "./node_modules/grunt-cli/bin/grunt test"
   },
   "keywords": [
     "yeoman-generator",
@@ -26,16 +26,16 @@
   "homepage": "https://github.com/pwmckenna/generator-travis-ci",
   "bugs": "https://github.com/pwmckenna/generator-travis-ci/issues",
   "dependencies": {
-    "yeoman-generator": "~0.13.4",
-    "q": "~0.8.12",
-    "request": "~2.14.0",
-    "github": "~0.1.12",
-    "open": "0.0.3",
-    "lodash": "~1.0.1",
+    "yeoman-generator": "~0.16.0",
+    "q": "~1.0.0",
+    "request": "~2.33.0",
+    "github": "~0.1.13",
+    "open": "0.0.4",
+    "lodash": "~2.4.1",
     "ursa": "~0.8.0",
-    "git-tools": "0.0.3",
+    "git-tools": "0.0.8",
     "travis-ci": "~1.2.0",
-    "chalk": "~0.3.0"
+    "chalk": "~0.4.0"
   },
   "devDependencies": {
     "grunt": "~0.4.2",
