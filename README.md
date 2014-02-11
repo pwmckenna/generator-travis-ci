@@ -20,7 +20,7 @@ Beta version 1.0 and hopefully all future versions.
 Travis is deeply integrated with github, and in order to set all the travis hooks for you, this generator must be run on project hosted on github. Your git remotes should looks something like this:
 
 __`git remote -v`__
-> origin  git@github.com:pwmckenna/generator-travis-ci.git (fetch)
+> origin  git@github.com:pwmckenna/generator-travis-ci.git (fetch)  
 > origin  git@github.com:pwmckenna/generator-travis-ci.git (push)
 
 ## Sub-Generators:
