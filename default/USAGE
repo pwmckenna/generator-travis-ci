@@ -1,0 +1,8 @@
+Description:
+    This will generate a .travis.yml file that you can use with travis-ci.org to listen to your repo's master branch, and on every commit, run `npm test`.
+
+Example:
+    yo travis-ci
+
+    This will create:
+        .travis.yml

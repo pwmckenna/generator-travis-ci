@@ -14,8 +14,11 @@ function Generator() {
 util.inherits(Generator, TravisGenerator);
 
 Generator.prototype.writeDotTravisFile = function () {
+    if (!this.options.nested) {
+        this.displayLogo();
+    }
+
     var done = this.async();
-    this.displayLogo();
     sequence([
         this.getSourceBranch.bind(this),
         this.getDestinationBranch.bind(this),
@@ -26,8 +29,7 @@ Generator.prototype.writeDotTravisFile = function () {
         this.getGitHubOAuthToken.bind(this),
         this.getEncryptedGitHubOAuthToken.bind(this),
     ]).spread(function (sourceBranch, destinationBranch, owner, projectName, email, name, oauth, secure) {
-        this.directory('.', '.');
-        this.template('.travis.yml', '.travis.yml', {
+        this.template(path.resolve(__dirname, './templates/_travis.yml'), '.travis.yml', {
             sourceBranch: sourceBranch,
             destinationBranch: destinationBranch,
             oauth: oauth.token,

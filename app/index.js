@@ -13,20 +13,38 @@ function Generator() {
 
 util.inherits(Generator, TravisGenerator);
 
-Generator.prototype.writeDotTravisFile = function () {
+var DEFAULT_SUBAPP = 'travis-ci:default    (runs `grunt` on Travis-CI so you know when your build is passing)';
+var GH_PAGES_SUBAPP = 'travis-ci:gh-pages   (runs `grunt` on Travis-CI and deploys the build to your GitHub Pages branch)';
+
+Generator.prototype.askFor = function () {
     var done = this.async();
     this.displayLogo();
 
-    sequence([
-        this.ensureTravisRepositoryHookSet.bind(this),
-        this.insertReadmeStatusImage.bind(this),
-        this.revokeGitHubOAuthToken.bind(this)
-    ]).then(function () {
-        this.directory('.', '.');
-        this.template('.travis.yml', '.travis.yml', {});
-    }.bind(this)).then(function () {
+    this.prompt({
+        type: 'list',
+        name: 'list',
+        message: 'What would you like Travis to do for you?',
+        choices: [
+            DEFAULT_SUBAPP,
+            GH_PAGES_SUBAPP
+        ]
+    }).then(function (props) {
+        if (props.list === DEFAULT_SUBAPP) {
+            this.generatorName = 'travis-ci:default';
+        } else if (props.list === GH_PAGES_SUBAPP) {
+            this.generatorName = 'travis-ci:gh-pages';
+        }
         done();
-    }).fail(function (err) {
+    }.bind(this)).fail(function (err) {
         done(new Error(err));
+    });
+};
+
+Generator.prototype.main = function () {
+    this.invoke(this.generatorName, {
+        options: {
+            nested: true,
+            appName: this.appName
+        }
     });
 };
