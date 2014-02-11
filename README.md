@@ -1,11 +1,14 @@
 # generator-travis-ci
 
-[Yeoman](http://yeoman.io) [generator](https://github.com/yeoman/generator) that provides travis-ci setup options for yeoman projects.
-__`yo travis-ci:gh-pages`__ is an automated alternative to https://github.com/yeoman/yeoman/wiki/Deployment.
+> [![Build Status](https://travis-ci.org/pwmckenna/generator-travis-ci.png?branch=master)](https://travis-ci.org/pwmckenna/generator-travis-ci)
 
 ## Installation
 
 __`npm install -g generator-travis-ci`__
+
+## Usage
+
+__`yo travis-ci`__
 
 ## Requirements
 
@@ -26,14 +29,13 @@ __`git remote -v`__
 
 > Sets up travis-ci.org to track your project and creates a basic .travis.yml that runs `grunt` on each commit.
 
-> You can then display your projects build/test status in your README or elsewhere like below:
+> You can then display your projects build/test status in your README or elsewhere using a travis badge like above.
 
-> [![Build Status](https://travis-ci.org/pwmckenna/generator-travis-ci.png?branch=master)](https://travis-ci.org/pwmckenna/generator-travis-ci)
-
-Usage: __`yo travis-ci`__
+Usage: __`yo travis-ci:default`__
 
 #### gh-pages generator
 
+> An automated alternative to https://github.com/yeoman/yeoman/wiki/Deployment.
 > Aims to make yeoman sites work similar to jekyll sites on github pages. Commit the raw files into master and what is served via gh-pages is `grunt build` output. For [user & organization pages](https://help.github.com/articles/user-organization-and-project-pages#user--organization-pages), you specify the branch you'd like to develop in, and the output is pushed to master.
 
 > Creates a *.travis.yml* file that tells travis-ci to build the yeoman project in your master branch after every commit and push the built site into your project's *gh-pages* branch.
