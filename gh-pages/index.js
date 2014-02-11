@@ -1,8 +1,6 @@
-var assert = require('assert');
 var TravisGenerator = require('../lib/travis-generator');
 var path = require('path');
 var util = require('util');
-var q = require('q');
 var sequence = require('../lib/sequence');
 
 module.exports = Generator;
