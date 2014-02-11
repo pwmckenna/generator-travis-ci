@@ -42,14 +42,9 @@ Usage: __`yo travis-ci:default`__
 
 Usage: __`yo travis-ci:gh-pages`__
 
-#### suggestions?
+## Suggestions?
 
-If you have suggestions for common yeoman/grunt testing/deployment tasks that could be handled best by a continuous integration service, make a pull request or shoot me a message!
-
-## Contribute
-
-See the [contributing docs](https://github.com/yeoman/yeoman/blob/master/contributing.md)
-
+If you have suggestions for common yeoman/grunt testing/deployment tasks that could be handled best by a continuous integration service, make a pull request or [shoot me a message!](https://twitter.com/pwmckenna)
 
 ## License
 
