@@ -24,6 +24,6 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask('travis', ['jshint', 'mochaTest']);
+    grunt.registerTask('travis', ['jshint']);
     grunt.registerTask('test', ['jshint', 'env:test', 'mochaTest']);
 };
