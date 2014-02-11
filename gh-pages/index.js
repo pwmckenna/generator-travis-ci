@@ -3,6 +3,7 @@ var TravisGenerator = require('../lib/travis-generator');
 var path = require('path');
 var util = require('util');
 var q = require('q');
+var sequence = require('../lib/sequence');
 
 module.exports = Generator;
 
@@ -16,153 +17,31 @@ util.inherits(Generator, TravisGenerator);
 
 Generator.prototype.writeDotTravisFile = function () {
     var done = this.async();
-    this.displayLogo()
-
-        .then(function () {
-            return q.resolve().then(function () {
-                return this.initializeGitHubApi();
-            }.bind(this)).then(
-                this.celebrate('Initialize GitHub Api'),
-                this.mourn('Initialize GitHub Api')
-            );
-        }.bind(this))
-
-        .then(function () {
-            return q.resolve().then(function () {
-                return this.initializeTravisApi();
-            }.bind(this)).then(
-                this.celebrate('Initialize Travis-ci Api'),
-                this.mourn('Initialize Travis-ci Api')
-            );
-        }.bind(this))
-
-        .then(function () {
-            return q.resolve().then(function () {
-                return this.repositoryInformation();
-            }.bind(this)).then(
-                this.celebrate('Query Repository Information'),
-                this.mourn('Query Repository Information')
-            );
-        }.bind(this))
-
-        .then(function () {
-            return q.resolve().then(function () {
-                return this.setSourceBranch();
-            }.bind(this)).then(
-                this.celebrate('Set Source Branch'),
-                this.mourn('Set Source Branch')
-            );
-        }.bind(this))
-
-        .then(function () {
-            return q.resolve().then(function () {
-                return this.setDestinationBranch();
-            }.bind(this)).then(
-                this.celebrate('Set Destination Branch'),
-                this.mourn('Set Destination Branch')
-            );
-        }.bind(this))
-
-        .then(function () {
-            return q.resolve().then(function () {
-                return this.gitHubLogin();
-            }.bind(this)).then(
-                this.celebrate('Login to GitHub Api'),
-                this.mourn('Login to GitHub Api')
-            );
-        }.bind(this))
-
-        .then(function () {
-            return q.resolve().then(function () {
-                return this.gitHubUserInfo();
-            }.bind(this)).then(
-                this.celebrate('Query GitHub User Information'),
-                this.mourn('Query GitHub User Information')
-            );
-        }.bind(this))
-
-        .then(function () {
-            return q.resolve().then(function () {
-                return this.ensureTravisAppAuthorized();
-            }.bind(this)).then(
-                this.celebrate('Ensure GitHub Travis App Authorized'),
-                this.mourn('Ensure GitHub Travis App Authorized')
-            );
-        }.bind(this))
-
-        .then(function () {
-            return q.resolve().then(function () {
-                return this.generateGitHubOAuthToken();
-            }.bind(this)).then(
-                this.celebrate('Generate GitHub OAuth Token'),
-                this.mourn('Generate GitHub OAuth Token')
-            );
-        }.bind(this))
-
-        .then(function () {
-            return q.resolve().then(function () {
-                return this.travisGitHubAuthentication();
-            }.bind(this)).then(
-                this.celebrate('Login to Travis-ci Api'),
-                this.mourn('Login to Travis-ci Api')
-            );
-        }.bind(this))
-
-        .then(function () {
-            return q.resolve().then(function () {
-                return this.ensureTravisRepositoryHookSet();
-            }.bind(this)).then(
-                this.celebrate('Ensure Travis Repository Hook Set'),
-                this.mourn('Ensure Travis Repository Hook Set')
-            );
-        }.bind(this))
-
-        .then(function () {
-            return q.resolve().then(function () {
-                return this.insertReadmeStatusImage();
-            }.bind(this)).then(
-                this.celebrate('Readme Build Status Image'),
-                this.mourn('Readme Build Status Image')
-            );
-        }.bind(this))
-
-        .then(function () {
-            return q.resolve().then(function () {
-                return this.encryptGitHubOAuthToken();
-            }.bind(this)).then(
-                this.celebrate('Encrypt GitHub OAuth Token'),
-                this.mourn('Encrypt GitHub OAuth Token')
-            );
-        }.bind(this))
-
-        .then(function () {
-            try {
-                assert(this.has('secure'), 'encrypted oauth token unavailable');
-                assert(this.has('owner'), 'owner not determined');
-                assert(this.has('projectName'), 'project name not determined');
-                assert(this.has('email'), 'user email unavailable');
-                assert(this.has('name'), 'user\'s full name unavailable');
-
-                this.directory('.', '.');
-                this.template('.travis.yml', '.travis.yml', {
-                    sourceBranch: this.get('sourceBranch'),
-                    destinationBranch: this.get('destinationBranch'),
-                    oauth: this.get('githubOAuthAuthorization').token,
-                    secure: this.get('secure'),
-                    owner: this.get('owner'),
-                    projectName: this.get('projectName'),
-                    email: this.get('email'),
-                    name: this.get('name')
-                });
-                return q.resolve();
-            } catch (err) {
-                return q.reject(err);
-            }
-        }.bind(this))
-
-        .then(function () {
-            done();
-        }.bind(this), function (err) {
-            done(new Error(err));
+    this.displayLogo();
+    sequence([
+        this.getSourceBranch.bind(this),
+        this.getDestinationBranch.bind(this),
+        this.getOwner.bind(this),
+        this.getProjectName.bind(this),
+        this.getEmail.bind(this),
+        this.getName.bind(this),
+        this.getGitHubOAuthToken.bind(this),
+        this.getEncryptedGitHubOAuthToken.bind(this),
+    ]).spread(function (sourceBranch, destinationBranch, owner, projectName, email, name, oauth, secure) {
+        this.directory('.', '.');
+        this.template('.travis.yml', '.travis.yml', {
+            sourceBranch: sourceBranch,
+            destinationBranch: destinationBranch,
+            oauth: oauth.token,
+            secure: secure,
+            owner: owner,
+            projectName: projectName,
+            email: email,
+            name: name
         });
+    }.bind(this)).then(function () {
+        done();
+    }.bind(this)).fail(function (err) {
+        done(new Error(err));
+    });
 };
