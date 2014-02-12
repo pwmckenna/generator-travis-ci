@@ -27,7 +27,7 @@ Generator.prototype.writeDotTravisFile = function () {
         this.getEmail.bind(this),
         this.getName.bind(this),
         this.getGitHubOAuthToken.bind(this),
-        this.getEncryptedGitHubOAuthToken.bind(this),
+        this.getEncryptedGitHubOAuthToken.bind(this)
     ]).spread(function (sourceBranch, destinationBranch, owner, projectName, email, name, oauth, secure) {
         this.template(path.resolve(__dirname, './templates/_travis.yml'), '.travis.yml', {
             sourceBranch: sourceBranch,
