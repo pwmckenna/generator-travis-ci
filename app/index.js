@@ -7,7 +7,7 @@ module.exports = Generator;
 function Generator() {
     TravisGenerator.apply(this, arguments);
     this.appname = path.basename(process.cwd());
-    this.desc('This generator creates a .travis.yml that tells travis-ci to build your yeoman project and push the build to your gh-pages branch, on every commit to master.');
+    this.desc('This generator helps you set up your project to run tests or deploy your app to GitHub Pages via Travis when you push commits.');
 }
 
 util.inherits(Generator, TravisGenerator);
